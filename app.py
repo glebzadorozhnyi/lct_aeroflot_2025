@@ -3,9 +3,23 @@ from ultralytics import YOLO
 import cv2
 import os
 import time
+import ast
+from collections import Counter
+import numpy as np
+import json
+def get_classes(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        data = f.read()
+
+    # Преобразуем строку в словарь
+    classes_correspondence = ast.literal_eval(data)
+    return classes_correspondence
 
 app = Flask(__name__)
-model = YOLO("yolo11n-seg.pt")  # load an official model
+model = YOLO("yolo11n-seg.pt")
+progress_value = {"value": 0, "class_name": ''}
+classes_correspondence = get_classes('classes.txt')
+
 
 
 def generate_frames():
@@ -13,12 +27,25 @@ def generate_frames():
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
+    classes_counter = np.zeros(len(classes_correspondence))
+
     try:
         while True:
             success_tv, tv_frame = camera.read()
 
             results = model(tv_frame, verbose=False)
             segments = results[0].plot()
+
+            # классы
+            mask = classes_counter > 0
+            classes_counter[mask] -= 1
+
+            indexes = np.array(list(set(results[0].boxes.cls.tolist())), dtype=int)
+            classes_counter[indexes] += 2
+
+            progress_value['value'] = np.max(classes_counter)
+            progress_value['class_name'] = classes_correspondence[np.argmax(classes_counter)]
+
 
             ret, buffer = cv2.imencode('.jpg', segments)
             frame_data = buffer.tobytes()
@@ -42,7 +69,17 @@ def video_feed():
 
 @app.route('/')
 def home():
+    progress_value["value"] = 0
     return render_template('home.html')
+
+@app.route('/progress')
+def progress():
+    def generate():
+        while True:
+            time.sleep(0.1)  # обновляем каждые полсекунды
+            yield f"data: {json.dumps(progress_value)}\n\n"
+    return Response(generate(), mimetype="text/event-stream")
+
 
 
 if __name__ == '__main__':
@@ -51,3 +88,5 @@ if __name__ == '__main__':
 
 
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
