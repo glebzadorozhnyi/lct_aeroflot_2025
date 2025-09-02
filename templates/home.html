@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Веб-сервис с камерой</title>
+    <style>
+        body {
+             margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .video-container {
+            width: 640px;
+            height: 480px;
+            border: 3px solid rgba(0, 100, 200, 0.7);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <img id="videoStream" src="{{ url_for('video_feed') }}" width="640" height="480">
+        <img id="capturedImage" src="" alt="Снятый кадр">
+    </div>
+
+    <script>
+    </script>
+</body>
+</html>
