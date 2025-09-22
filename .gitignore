@@ -1,0 +1,4 @@
+.staf
+.workdir
+nix_store
+__pycache__
