@@ -54,7 +54,7 @@ def fill_test_data():
                     "screw_flat", # 1. Плоская отвертка (-)
                     "screw_plus", # 2. Крестовая отвертка (+)
                     "offset plus_screw", # 3. отвертка на смещенный крест
-                    "screw_plus", # 4. Коловорот
+                    "kolovorot", # 4. Коловорот
                     "safety_pliers", # 5. Пассатижи контровочные
                     "pliers", # 6. Пассатижи
                     "shernitsa", # 7. Шерница
