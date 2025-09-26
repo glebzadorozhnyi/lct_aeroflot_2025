@@ -1,57 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Веб-сервис с камерой</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🪛</title>
     <style>
         body {
-             margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            min-height: 100vh;
+            margin: 50px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            position: relative;
         }
-
-        .video-container {
-            width: 640px;
-            height: 480px;
-            border: 3px solid rgba(0, 100, 200, 0.7);
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s ease;
+        input[type="file"] {
+            margin-bottom: 20px;
         }
-
-        .hidden {
-          display: none;
+        img {
+            max-width: 80%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin-top: 20px;
         }
 
 
+</style>
 
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <img id="videoStream" src="{{ url_for('video_feed') }}" width="640" height="480">
-        <img id="capturedImage" src="" alt="Снятый кадр">
+    <h1>Интеллектуальный детектор инструментов</h1>
+    <label for="fileInput" style="cursor: pointer; background-color: #333333; color: white; padding: 8px 16px; border-radius: 4px;">
+        Выбрать изображение
+    </label>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+
+    <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
+        <!-- Изображение слева -->
+        <img id="resultImg" style="
+            max-width: 60vw;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            border: 1px solid #ccc;
+            display: block; /* важно для правильного выравнивания */
+        ">
+
+        <!-- Listbox справа -->
+        <div style="
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 200px;
+            margin-top: 30px;  /* ручное смещение вниз */
+        ">
+            <ul id="listBox" style="list-style: none; padding: 0; margin: 0;"></ul>
+        </div>
     </div>
-    <progress id="progress" value="0" max="100" style="width:300px"></progress>
-    <p id="status"></p>
+
     <script>
-        var source = new EventSource("/progress");
-        source.onmessage = function(event) {
-            let data = JSON.parse(event.data);
-            let progressVal = Number(data.value) || 0;
-            document.getElementById("progress").value = Math.min(100,progressVal);
-            document.getElementById("status").innerText = progressVal + "%";
-            if (progressVal >= 100) {
-                source.close();
-                 document.getElementById("status").innerText =  data.class_name + " поступил от " + data.departue;
-            }
-        };
-    </script>
+        const input = document.getElementById('fileInput');
+        const resultImg = document.getElementById('resultImg');
+        const listBox = document.getElementById('listBox');
+
+        input.addEventListener('change', async () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch("/process-image", { method: "POST", body: formData });
+            const data = await response.json();
+
+            // Обновляем listbox
+            listBox.innerHTML = "";
+            data.classes.forEach(class_name => {
+                const li = document.createElement("li");
+                li.textContent = class_name;
+                listBox.appendChild(li);
+            });
+
+            // Отображаем изображение
+            const byteArray = new Uint8Array(data.image.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const blob = new Blob([byteArray], { type: "image/jpeg" });
+            resultImg.src = URL.createObjectURL(blob);
+        });
+</script>
 </body>
 </html>
