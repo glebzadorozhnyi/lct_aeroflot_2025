@@ -1,0 +1,5 @@
+---
+_target_: src.encoders.MobileNetEncoder
+name: mobilenetv3_small_075
+in_size: ${image_size}
+pretrained: true

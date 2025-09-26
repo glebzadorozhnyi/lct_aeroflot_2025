@@ -1,0 +1,5 @@
+---
+_target_: src.encoders.ConvNextEncoder
+name: convnextv2_atto_05
+in_size: ${image_size}
+pretrained: true

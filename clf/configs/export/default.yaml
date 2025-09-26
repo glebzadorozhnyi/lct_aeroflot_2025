@@ -1,0 +1,18 @@
+---
+ts:
+  enable: true
+  device: cuda:0
+  path: export/ts/clf.pt
+  check_trace: true
+  check_tolerance: 1e-5
+  strict: true
+  optimize: true
+onnx:
+  enable: true
+  device: cuda:0
+  path: export/onnx/clf.onnx
+  export_params: true
+  opset_version: 15
+  do_constant_folding: true
+  verbose: false
+  simplify: true

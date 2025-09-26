@@ -1,0 +1,7 @@
+---
+_target_: src.ldms.ClfLDM
+root: /home/akobylin/datasets/lct_2025
+image_size: ${image_size}
+batch_size: ${batch_size}
+num_workers: ${num_workers}
+seed: ${seed}

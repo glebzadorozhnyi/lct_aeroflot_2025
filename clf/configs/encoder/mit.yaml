@@ -1,0 +1,5 @@
+---
+_target_: src.encoders.MiTEncoder
+name: mit-b0
+in_size: ${image_size}
+pretrained: true
