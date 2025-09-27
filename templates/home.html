@@ -58,8 +58,21 @@
         ">
             <ul id="listBox" style="list-style: none; padding: 0; margin: 0;"></ul>
         </div>
-    </div>
 
+
+
+    </div>
+    <div>
+        <button id="showAeroToolsTable">Показать актуальное состояние базы</button>
+        <button id="resetBtn">Сбросить</button>
+        <a href="/get_json_report">Линк на получение отчета в формате json</a>
+        <table>
+            <thead><tr><th>Имя</th><th>Тип</th><th>Статус обнаружения</th><th>Действия</th></tr></thead>
+            <tbody id="toolsBody">
+            </tbody>
+        </table>
+    </div>
+    <script type="module" src="/static/main.js"></script>
     <script>
         const input = document.getElementById('fileInput');
         const resultImg = document.getElementById('resultImg');

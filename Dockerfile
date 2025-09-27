@@ -10,7 +10,7 @@ RUN mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
 RUN wget https://developer.download.nvidia.com/compute/cuda/12.5.0/local_installers/cuda-repo-ubuntu2204-12-5-local_12.5.0-555.42.02-1_amd64.deb
 RUN dpkg -i cuda-repo-ubuntu2204-12-5-local_12.5.0-555.42.02-1_amd64.deb
 RUN cp /var/cuda-repo-ubuntu2204-12-5-local/cuda-*-keyring.gpg /usr/share/keyrings/
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get -y install cuda-toolkit-12-5
 
 #fixup missing ImportError: libGL.so.1 for cv2 (opencv-python)
