@@ -6,16 +6,18 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./.workdir/sql_app.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///workdir/sql_app.db"
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import sessionmaker
 
 import cv2
 import ast
+import io
 import numpy as np
 from ultralytics import YOLO
-import pipeline
+import src.pipeline
+from PIL import Image
 
 templates = Jinja2Templates(directory="templates")
 
@@ -87,6 +89,16 @@ async def home(request: Request):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+def image_to_byte_array(image: Image.Image) -> bytes:
+    # BytesIO is a file-like buffer stored in memory
+    imgByteArr = io.BytesIO()
+    # image.save expects a file-like as a argument
+    image.save(imgByteArr, format=image.format)
+    # Turn the BytesIO object back into a bytes object
+    imgByteArr = imgByteArr.getvalue()
+    return imgByteArr
+
+
 @app.post("/process-image")
 async def process_image(file: UploadFile = File(...)):
     # Читаем картинку в массив байт
@@ -95,19 +107,22 @@ async def process_image(file: UploadFile = File(...)):
 
     # Декодируем изображение OpenCV
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    pil_img = Image.fromarray(img)
     if img is None:
         return {"error": "Не удалось прочитать изображение"}
 
     # Процессинг сегментатором
-    image_with_segments, found_classes = process_with_segmentation(img)
+    # image_with_segments, found_classes = process_with_segmentation(img)
+    probs, annotated_image = src.pipeline.pipeline(pil_img, "yolo")
 
     # Конвертируем изображение обратно в JPEG
-    success, buffer = cv2.imencode(".jpg", image_with_segments)
-    if not success:
-        return {"error": "Не удалось закодировать изображение"}
+    # success, buffer = cv2.imencode(".jpg", annotated_image)
+    buffer = image_to_byte_array(annotated_image)
+    # if not success:
+    #     return {"error": "Не удалось закодировать изображение"}
 
     # Отправляем обратно в веб
-    return JSONResponse({"classes": found_classes, "image": buffer.tobytes().hex()})
+    return JSONResponse({"classes": probs, "image": buffer.tobytes().hex()})
 
 
 @app.get("/items/{item_id}")
@@ -228,3 +243,9 @@ def unset_detect_state_by_id(aero_tool_id: int):
     db.commit()  # сохраняем изменения
     db.refresh(aero_tool)
     return aero_tool
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
