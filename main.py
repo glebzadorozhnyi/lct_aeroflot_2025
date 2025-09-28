@@ -89,16 +89,6 @@ async def home(request: Request):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-def image_to_byte_array(image: Image.Image) -> bytes:
-    # BytesIO is a file-like buffer stored in memory
-    imgByteArr = io.BytesIO()
-    # image.save expects a file-like as a argument
-    image.save(imgByteArr, format=image.format)
-    # Turn the BytesIO object back into a bytes object
-    imgByteArr = imgByteArr.getvalue()
-    return imgByteArr
-
-
 @app.post("/process-image")
 async def process_image(file: UploadFile = File(...)):
     # Читаем картинку в массив байт
@@ -112,14 +102,12 @@ async def process_image(file: UploadFile = File(...)):
         return {"error": "Не удалось прочитать изображение"}
 
     # Процессинг сегментатором
-    # image_with_segments, found_classes = process_with_segmentation(img)
     probs, annotated_image = src.pipeline.pipeline(pil_img, "yolo")
 
     # Конвертируем изображение обратно в JPEG
-    # success, buffer = cv2.imencode(".jpg", annotated_image)
-    buffer = image_to_byte_array(annotated_image)
-    # if not success:
-    #     return {"error": "Не удалось закодировать изображение"}
+    success, buffer = cv2.imencode(".jpg", annotated_image)
+    if not success:
+        return {"error": "Не удалось закодировать изображение"}
 
     # Отправляем обратно в веб
     return JSONResponse({"classes": probs, "image": buffer.tobytes().hex()})
