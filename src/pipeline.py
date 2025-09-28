@@ -94,7 +94,7 @@ def process_by_clf(instruments: Sequence[Image.Image]):
     return probs
 
 
-def pipeline(img: Image, type="yolo"):
+def pipeline(img: Image.Image, type="yolo"):
     processing_types = {
         "yolo": process_by_yolo,
         "yolo_seg": process_by_yolo_seg,
