@@ -88,7 +88,7 @@ def process_by_clf(instruments: Sequence[Image.Image]):
     probs = []
     for instrument in instruments:
         p = session.run(["p"], {input_name: np.array(instrument)[None, ...]})[0][0]
-        probs.append(p)
+        probs.append(p.tolist())
 
     logging.info(f"Probs from classifier: {probs}")
     return probs
