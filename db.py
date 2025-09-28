@@ -1,7 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy import Boolean, Column, Integer, String, create_engine
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///workdir/sql_app.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///.workdir/sql_app.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
 
@@ -24,6 +24,25 @@ class AeroTool(Base):
     detect_state = Column(
         Boolean,
     )
+
+
+class AeroToolDelivery(Base):
+    __tablename__ = "aerotool_set"
+
+    id = Column(Integer, primary_key=True, index=True)
+    image_lable = Column(String)
+    
+    delivery_state = Column(String)  # "in_stock", "on_hands"
+    type = Column(
+        String,
+    )
+    delivery_id = Column(
+        Integer,
+    )  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
+    detect_state = Column(
+        Boolean,
+    )
+
 
 
 # создаем таблицы
