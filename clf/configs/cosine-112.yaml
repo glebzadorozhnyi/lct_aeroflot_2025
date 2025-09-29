@@ -1,0 +1,28 @@
+---
+defaults:
+  - encoder: lcnet_100
+  - head: clf
+  - model: clf
+  - lm: clf
+  - ldm: clf
+  - optimizer: adamw
+  - lr_scheduler: cosine
+  - trainer: default
+  - export: default
+  - _self_
+epochs: 80
+image_size: 112
+warmup: 10
+batch_size: 256
+ckpt_path:
+experiment: clf-cosine-${model.encoder.name}-${image_size}
+logroot: /home/akobylin/logs/lct_2025/
+logdir: ${logroot}/${experiment}
+monitor_metric: auroc/macro/valid
+monitor_mode: max
+num_workers: 32
+num_classes: 11
+seed: 42
+hydra:
+  run:
+    dir: ${logdir}

@@ -1,0 +1,5 @@
+---
+_target_: src.encoders.MobileNetEncoder
+name: lcnet_100
+in_size: ${image_size}
+pretrained: true

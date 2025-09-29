@@ -1,0 +1,5 @@
+---
+_partial_: true
+_target_: src.heads.ClfHead
+num_classes: ${num_classes}
+dropout: 0.1

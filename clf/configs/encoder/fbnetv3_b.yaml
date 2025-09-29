@@ -1,0 +1,5 @@
+---
+_target_: src.encoders.MobileNetEncoder
+name: fbnetv3_b
+in_size: ${image_size}
+pretrained: true

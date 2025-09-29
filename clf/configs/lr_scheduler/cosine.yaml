@@ -1,0 +1,9 @@
+---
+_target_: src.schedulers.CosineAnnealingWarmupRestarts
+first_cycle_steps: ${epochs}
+cycle_mult: 1.0
+max_lr: ${optimizer.lr}
+min_lr: 1e-6
+warmup_steps: ${warmup}
+gamma: 1.0
+last_epoch: -1
