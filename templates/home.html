@@ -21,6 +21,160 @@
             border-radius: 8px;
             margin-top: 20px;
         }
+        .cart-panel{
+          width: var(--cart-width);
+          box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+          border-radius: 10px;
+          padding: 12px;
+          background: var(--bg);
+          font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          box-sizing: border-box;
+        }
+
+        .cart-title{
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #111827;
+          border-bottom: 1px solid var(--border);
+          padding-bottom: 6px;
+        }
+
+        .cart-list{
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          max-height: 55vh;
+          overflow: auto;
+          padding-right: 6px;
+        }
+
+        .cart-row{
+          display: grid;
+          grid-template-columns: 48px 1fr auto;
+          gap: 8px;
+          height: 28px;
+          align-items: center;
+          padding: 6px;
+          border-radius: 8px;
+          border: 1px solid transparent;
+        }
+
+        .cart-row:hover{
+          background: #fbfdff;
+          border-color: var(--border);
+          height: 28px;
+        }
+
+        .cart-thumb{
+          width: 48px;
+          height: 48px;
+          object-fit: cover;
+          border-radius: 6px;
+          background: #f3f4f6;
+        }
+
+        .cart-info{
+          width: 220px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          min-width: 0;
+        }
+
+        .cart-name{
+          width: 220px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .cart-price{
+          font-size: 12px;
+          color: var(--muted);
+        }
+
+        .qty-control{
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-left: 100px;
+        }
+
+        .qty-btn{
+          width: 28px;
+          height: 28px;
+          border-radius: 6px;
+          border: 1px solid var(--border);
+          background: white;
+          font-size: 16px;
+          line-height: 0;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          user-select: none;
+        }
+
+        .qty-btn:active{ transform: translateY(1px); }
+
+        .qty-input{
+          width: 14px;
+          text-align: center;
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          padding: 4px;
+          font-size: 13px;
+        }
+        .qty-text {
+          display: inline-block;
+          min-width: 30px;
+          text-align: center;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          padding: 2px 6px;
+          background-color: #f9f9f9;
+        }
+
+        .row-subtotal{
+          justify-self: end;
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+          margin-left: 6px;
+          min-width: 64px;
+          text-align: right;
+        }
+
+        /* footer */
+        .cart-footer{
+          border-top: 1px solid var(--border);
+          padding-top: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .cart-total-label{ font-size: 13px; color: var(--muted); }
+        .cart-total-value{ font-size: 18px; font-weight: 700; color: #111827; }
+
+        .checkout-btn{
+          width: 100%;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: none;
+          background: var(--accent);
+          color: white;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .checkout-btn:active{ transform: translateY(1px); }
 
 
 </style>
@@ -36,7 +190,39 @@
 
 
     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
-        <!-- Изображение слева -->
+
+     <div class="cart-panel" id="cartPanel">
+      <h3 class="cart-title">Ожидаемый комплект</h3>
+
+
+
+
+        <div class="cart-list" style="
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 260px;
+            display: block; /* важно для правильного выравнивания */
+        ">
+          {% for item in cart_items %}
+          <div class="cart-row" data-id="{{ item.id }}">
+            <div class="cart-info">
+              <div class="cart-name">{{ item.name }}</div>
+            </div>
+
+            <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
+              <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
+              <input class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*"
+                     value="1" aria-label="Количество">
+              <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+    </div>
         <img id="resultImg" style="
             max-width: 60vw;
             max-height: 80vh;
@@ -47,17 +233,32 @@
         ">
 
         <!-- Listbox справа -->
-        <div style="
+    <div class="cart-panel" id="resultPanel">
+      <h3 class="cart-title">Распознанный комплект</h3>
+
+      <div class="cart-list" style="
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
-            width: 200px;
-            margin-top: 30px;  /* ручное смещение вниз */
-        ">
-            <ul id="listBox" style="list-style: none; padding: 0; margin: 0;"></ul>
+            width: 260px;
+            display: block; /* важно для правильного выравнивания */
+      ">
+        {% for item in cart_items %}
+        <div class="cart-row" data-id="{{ item.id }}">
+          <div class="cart-info">
+            <div class="cart-name">{{ item.name }}</div>
+          </div>
+
+          <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
+            <span class="qty-text">{{ item.qty }} 1/1</span>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+    </div>
+
 
 
 
@@ -76,7 +277,6 @@
     <script>
         const input = document.getElementById('fileInput');
         const resultImg = document.getElementById('resultImg');
-        const listBox = document.getElementById('listBox');
 
         input.addEventListener('change', async () => {
             const file = input.files[0];
@@ -88,18 +288,64 @@
             const response = await fetch("/process-image", { method: "POST", body: formData });
             const data = await response.json();
 
-            // Обновляем listbox
-            listBox.innerHTML = "";
-            data.classes.forEach(class_name => {
-                const li = document.createElement("li");
-                li.textContent = class_name;
-                listBox.appendChild(li);
-            });
 
             // Отображаем изображение
             const byteArray = new Uint8Array(data.image.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
             const blob = new Blob([byteArray], { type: "image/jpeg" });
             resultImg.src = URL.createObjectURL(blob);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+          // Находим все кнопки "+" в корзине
+          const plusButtons = document.querySelectorAll(".cart-list .qty-btn.plus");
+
+        // Находим все кнопки "-" в корзине
+          const minusButtons = document.querySelectorAll(".cart-list .qty-btn.minus");
+
+          plusButtons.forEach(btn => {
+            btn.addEventListener("click", function() {
+              // Находим родительский ряд
+              const row = btn.closest(".cart-row");
+              if (!row) return;
+
+              // Находим input с количеством в этом ряду
+              const input = row.querySelector(".qty-input");
+              if (!input) return;
+
+              // Получаем текущее значение, увеличиваем на 1
+              let qty = parseInt(input.value) || 0;
+              qty += 1;
+              input.value = qty;
+
+              // Триггерим событие change, если есть обработчики пересчета
+              input.dispatchEvent(new Event('change'));
+
+              console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+            });
+          });
+
+          minusButtons.forEach(btn => {
+            btn.addEventListener("click", function() {
+              // Находим родительский ряд
+              const row = btn.closest(".cart-row");
+              if (!row) return;
+
+              // Находим input с количеством в этом ряду
+              const input = row.querySelector(".qty-input");
+              if (!input) return;
+
+              // Получаем текущее значение, увеличиваем на 1
+              let qty = parseInt(input.value) || 0;
+              qty -= 1;
+              if (qty < 0) qty = 0
+              input.value = qty;
+
+              // Триггерим событие change, если есть обработчики пересчета
+              input.dispatchEvent(new Event('change'));
+
+              console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+            });
+          });
         });
 </script>
 </body>
