@@ -32,8 +32,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def process_by_yolo(img: Image.Image):
-    model = YOLO("models/yolo11n.pt")
-    results = model.predict(img, verbose=False, conf=0.2, device="cpu")
+    model = YOLO("models/best.pt")
+    results = model.predict(img, verbose=False, conf=0.5, device="cpu")
     logging.info(f"Detected {len(results)} objects")
     return results
 
