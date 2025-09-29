@@ -102,8 +102,24 @@ def pipeline(img: Image.Image, type="yolo"):
         "fast_sam": process_by_fast_sam,
     }
 
+    tools_classes = [
+        "screw_flat",
+        "screw_plus",
+        "offset_plus_screw",
+        "kolovorot",
+        "safety_pliers",
+        "pliers",
+        "shernitsa",
+        "adjustable_wrench",
+        "can_opener",
+        "open_end_wrench",
+        "side_cutters",
+    ]
+
     results = processing_types[type](img)
     boxes = results[0].boxes
+    indexes = results[0].boxes.cls.tolist()
+    classes = [tools_classes[int(x)] for x in indexes]
 
     annotated_image = results[0].plot()
 
