@@ -9,8 +9,8 @@ from PIL import Image
 
 from ultralytics import YOLO
 
-import src.pipeline
-from src.db import db, AeroTool
+import pipeline
+from db import db, AeroTool
 
 model = YOLO("yolo11n-seg.pt")
 templates = Jinja2Templates(directory="templates")
@@ -37,7 +37,7 @@ async def process_image(file: UploadFile = File(...)):
         return {"error": "Не удалось прочитать изображение"}
 
     # Процессинг сегментатором
-    probs, annotated_image = src.pipeline.pipeline(pil_img, "yolo")
+    probs, annotated_image = pipeline.pipeline(pil_img, "yolo")
 
     # Конвертируем изображение обратно в JPEG
     success, buffer = cv2.imencode(".jpg", annotated_image)
