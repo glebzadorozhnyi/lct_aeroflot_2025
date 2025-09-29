@@ -56,6 +56,7 @@
           display: grid;
           grid-template-columns: 48px 1fr auto;
           gap: 8px;
+          height: 28px;
           align-items: center;
           padding: 6px;
           border-radius: 8px;
@@ -65,6 +66,7 @@
         .cart-row:hover{
           background: #fbfdff;
           border-color: var(--border);
+          height: 28px;
         }
 
         .cart-thumb{
@@ -210,7 +212,7 @@
               <div class="cart-name">{{ item.name }}</div>
             </div>
 
-            <div class="qty-control" role="group" aria-label="Количество товара {{ item.id }}">
+            <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
               <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
               <input class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*"
                      value="1" aria-label="Количество">
@@ -231,17 +233,32 @@
         ">
 
         <!-- Listbox справа -->
-        <div style="
+    <div class="cart-panel" id="resultPanel">
+      <h3 class="cart-title">Распознанный комплект</h3>
+
+      <div class="cart-list" style="
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
-            width: 200px;
-            margin-top: 30px;  /* ручное смещение вниз */
-        ">
-            <ul id="listBox" style="list-style: none; padding: 0; margin: 0;"></ul>
+            width: 260px;
+            display: block; /* важно для правильного выравнивания */
+      ">
+        {% for item in cart_items %}
+        <div class="cart-row" data-id="{{ item.id }}">
+          <div class="cart-info">
+            <div class="cart-name">{{ item.name }}</div>
+          </div>
+
+          <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
+            <span class="qty-text">{{ item.qty }} 1/1</span>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+    </div>
+
 
 
 
@@ -260,7 +277,6 @@
     <script>
         const input = document.getElementById('fileInput');
         const resultImg = document.getElementById('resultImg');
-        const listBox = document.getElementById('listBox');
 
         input.addEventListener('change', async () => {
             const file = input.files[0];
@@ -272,13 +288,6 @@
             const response = await fetch("/process-image", { method: "POST", body: formData });
             const data = await response.json();
 
-            // Обновляем listbox
-            listBox.innerHTML = "";
-            data.classes.forEach(class_name => {
-                const li = document.createElement("li");
-                li.textContent = class_name;
-                listBox.appendChild(li);
-            });
 
             // Отображаем изображение
             const byteArray = new Uint8Array(data.image.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
