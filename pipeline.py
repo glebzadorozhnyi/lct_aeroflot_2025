@@ -123,9 +123,9 @@ def pipeline(img: Image.Image, type="yolo"):
 
     annotated_image = results[0].plot()
 
-    objects = preprocess_for_clf(img, boxes)
-    probs = process_by_clf(objects)
-    return probs, annotated_image
+    # objects = preprocess_for_clf(img, boxes)
+    # probs = process_by_clf(objects)
+    return classes, annotated_image
 
 
 if __name__ == "__main__":
