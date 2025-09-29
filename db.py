@@ -1,4 +1,4 @@
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, Mapped
 from sqlalchemy import Boolean, Column, Integer, String, create_engine
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///.workdir/sql_app.db"
@@ -18,30 +18,55 @@ class AeroTool(Base):
     type = Column(
         String,
     )
-    delivery_id = Column(
-        Integer,
-    )  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
+    delivery_id = Column(Integer,)  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
     detect_state = Column(
         Boolean,
     )
 
+JSONList = ["test1", "test2"]
 
 class AeroToolDelivery(Base):
-    __tablename__ = "aerotool_set"
+    __tablename__ = "aerotool_set_delivery"
 
     id = Column(Integer, primary_key=True, index=True)
-    image_lable = Column(String)
-    
-    delivery_state = Column(String)  # "in_stock", "on_hands"
-    type = Column(
+    image_file_id = Column(
         String,
     )
-    delivery_id = Column(
-        Integer,
-    )  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
-    detect_state = Column(
-        Boolean,
+    # my_list_of_strings:Mapped[list[str]] = mapped_column(JSONList)
+    founded_screw_flat = Column(Integer,)
+    founded_screw_plus = Column(Integer,)
+    founded_offset_plus_screw = Column(Integer,)
+    founded_kolovorot = Column(Integer,)
+    founded_safety_pliers = Column(Integer,)
+    founded_pliers = Column(Integer,)
+    founded_shernitsa = Column(Integer,)
+    founded_adjustable_wrench = Column(Integer,)
+    founded_can_opener = Column(Integer,)
+    founded_open_end_wrench = Column(Integer,)
+    founded_side_cutters = Column(Integer,)
+
+
+
+
+
+
+    datatime = Column(
+        String,
     )
+
+    # image_lable = Column(String)
+
+
+    # delivery_state = Column(String)  # "in_stock", "on_hands"
+    # type = Column(
+    #     String,
+    # )
+    # delivery_id = Column(
+    #     Integer,
+    # )  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
+    # detect_state = Column(
+    #     Boolean,
+    # )
 
 
 
@@ -56,9 +81,9 @@ def check_exist_tool_in_db_by_name(name) -> bool:
     first = db.query(AeroTool).filter(AeroTool.name == name).first()
 
     if first:
-        print(
-            f"Find existing item with name {first.name}: id {first.id} - ({first.type}) - {first.delivery_id}"
-        )
+        # print(
+        #     f"Find existing item with name {first.name}: id {first.id} - ({first.type}) - {first.delivery_id}"
+        # )
         return True
     else:
         return False
@@ -92,6 +117,17 @@ def fill_test_data():
                 db.add(screw_plus)  # добавляем в бд
     db.commit()  # сохраняем изменения
 
+# def add_delivery_set(hash_id, image_file_id, datatime):
+#     delivery_set = AeroToolDelivery(
+#                     id=hash_id,
+#                     image_file_id=image_file_id,
+#                     # type=i_tool_type,
+#                     # delivery_id=i_delevery,
+#                     datatime=datatime,
+#                 )
+#     db.add(delivery_set)  # добавляем в бд
+#     db.commit()
+
 
 def print_all_from_db():
     # получение всех объектов
@@ -99,6 +135,16 @@ def print_all_from_db():
     print("| id|           type        |         name         |")
     for i_aero_tool in aero_tools:
         print(f"|{i_aero_tool.id:3}| {i_aero_tool.name:22}| {i_aero_tool.type:20} |")
+
+
+def get_all_uploaded_files():
+    # получение всех объектов
+    aero_tools = db.query(AeroTool).all()
+    print("| id|           type        |         name         |")
+    for i_aero_tool in aero_tools:
+        print(f"|{i_aero_tool.id:3}| {i_aero_tool.name:22}| {i_aero_tool.type:20} |")
+
+
 
 
 fill_test_data()

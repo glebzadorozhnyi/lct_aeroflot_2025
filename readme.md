@@ -13,6 +13,7 @@ docker-compose build
 ### Run app
 - [optional] Clean last deploy
 ```sh
+docker container stop screwdriver 
 docker-compose stop && docker-compose rm
 # or 
 ocker container rm screwdriver
