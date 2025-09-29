@@ -294,6 +294,59 @@
             const blob = new Blob([byteArray], { type: "image/jpeg" });
             resultImg.src = URL.createObjectURL(blob);
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+          // Находим все кнопки "+" в корзине
+          const plusButtons = document.querySelectorAll(".cart-list .qty-btn.plus");
+
+        // Находим все кнопки "-" в корзине
+          const minusButtons = document.querySelectorAll(".cart-list .qty-btn.minus");
+
+          plusButtons.forEach(btn => {
+            btn.addEventListener("click", function() {
+              // Находим родительский ряд
+              const row = btn.closest(".cart-row");
+              if (!row) return;
+
+              // Находим input с количеством в этом ряду
+              const input = row.querySelector(".qty-input");
+              if (!input) return;
+
+              // Получаем текущее значение, увеличиваем на 1
+              let qty = parseInt(input.value) || 0;
+              qty += 1;
+              input.value = qty;
+
+              // Триггерим событие change, если есть обработчики пересчета
+              input.dispatchEvent(new Event('change'));
+
+              console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+            });
+          });
+
+          minusButtons.forEach(btn => {
+            btn.addEventListener("click", function() {
+              // Находим родительский ряд
+              const row = btn.closest(".cart-row");
+              if (!row) return;
+
+              // Находим input с количеством в этом ряду
+              const input = row.querySelector(".qty-input");
+              if (!input) return;
+
+              // Получаем текущее значение, увеличиваем на 1
+              let qty = parseInt(input.value) || 0;
+              qty -= 1;
+              if (qty < 0) qty = 0
+              input.value = qty;
+
+              // Триггерим событие change, если есть обработчики пересчета
+              input.dispatchEvent(new Event('change'));
+
+              console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+            });
+          });
+        });
 </script>
 </body>
 </html>
