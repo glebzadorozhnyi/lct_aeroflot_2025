@@ -31,7 +31,7 @@ async def process_image(file: UploadFile = File(...)):
     nparr = np.frombuffer(contents, np.uint8)
 
     # Декодируем изображение OpenCV
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR_RGB)
     pil_img = Image.fromarray(img)
     if img is None:
         return {"error": "Не удалось прочитать изображение"}
