@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 from fastapi import FastAPI, File, Request, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from PIL import Image
@@ -19,9 +19,22 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    cart_items = [
+        {"id": 1, "name": "Плоская отвёртка"},
+        {"id": 2, "name": "Крестовая отвёртка"},
+        {"id": 3, "name": "Отвёртка крест"},
+        {"id": 4, "name": "Коловорот"},
+        {"id": 5, "name": "Пассатижи контр"},
+        {"id": 6, "name": "Пассатижи"},
+        {"id": 7, "name": "Шерница"},
+        {"id": 8, "name": "Разводной ключ"},
+        {"id": 9, "name": "Открывалка"},
+        {"id": 10, "name": "Ключ рожковый"},
+        {"id": 11, "name": "Бокорезы"},
+    ]
+    return templates.TemplateResponse("home.html", {"request": request, "cart_items": cart_items})
 
 
 @app.post("/process-image")
