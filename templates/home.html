@@ -11,6 +11,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: #F5F7FA;
         }
         input[type="file"] {
             margin-bottom: 20px;
@@ -22,16 +23,17 @@
             margin-top: 20px;
         }
         .cart-panel{
-          width: var(--cart-width);
-          box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-          border-radius: 10px;
-          padding: 12px;
-          background: var(--bg);
+          display: inline-flex;
+          padding: 32px 40px;
+          align-items: flex-start;
+          gap: 64px;
           font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
           display: flex;
           flex-direction: column;
-          gap: 10px;
           box-sizing: border-box;
+          border-radius: 24px;
+          border: 1px solid #EDEFF2;
+          background: #FFF;
         }
 
         .cart-title{
@@ -61,12 +63,6 @@
           padding: 6px;
           border-radius: 8px;
           border: 1px solid transparent;
-        }
-
-        .cart-row:hover{
-          background: #fbfdff;
-          border-color: var(--border);
-          height: 28px;
         }
 
         .cart-thumb{
@@ -120,6 +116,12 @@
           align-items: center;
           justify-content: center;
           user-select: none;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .cart-row:hover .qty-btn {
+          opacity: 1;
         }
 
         .qty-btn:active{ transform: translateY(1px); }
@@ -228,9 +230,9 @@
         ">
         {% for item in cart_items %}
           <div class="cart-row" data-id="{{ item.id }}">
-            <div class="cart-info">
-              <div class="cart-name">{{ item.name }}</div>
-            </div>
+          <div class="cart-info">
+          <div class="cart-name">{{ item.name }}</div>
+          </div>
 
             <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
               <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
