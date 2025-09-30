@@ -5,8 +5,16 @@ from constants import TOOL_CLASSES, TOOL_CLASSES_RU
 
 
 class Pipeline:
+    _model: YOLO = None
+
+    @classmethod
+    def get_model(cls, model_path: str):
+        if cls._model is None:
+            cls._model = YOLO(model_path)
+        return cls._model
+
     def __init__(self, model_path: str = "models/best.pt"):
-        self.model = YOLO(model_path)
+        self.model = Pipeline.get_model(model_path)
 
     def process_by_yolo(self, img: Image.Image):
         results = self.model.predict(img, verbose=False, conf=0.5, device="0", iou=0.1)
