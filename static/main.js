@@ -126,6 +126,8 @@ function genHtmlRawOfTool(aeroTool) {
 }
 
 
+
+
 async function getAeroTools() {
   resetToolTable();
   // отправляет запрос и получаем ответ
@@ -144,9 +146,77 @@ async function getAeroTools() {
 }
 
 document.getElementById("showAeroToolsTable").addEventListener("click", async () => {
-  // sayHello('World');
-
   console.log(`Hello! Init table...`);
   getAeroTools();
 
 });
+
+
+function genHtmlRawOption(fileName) {
+  
+  const option = document.createElement("option");
+  option.setAttribute("value", fileName);
+  option.text = fileName;
+  return option;
+}
+
+const imgSelector = document.getElementById('mySelect');
+
+
+async function refreshFileSelector(fileName) {
+  
+  const response = await fetch("/get_all_uploaded_files", {
+    method: "GET",
+    
+    headers: { "Accept": "application/json" }
+  });
+  const countOfUploadedFiles = await response.json();
+
+  const imgSelector = document.getElementById("mySelect");
+
+  countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
+}
+
+
+async function refreshImageOfMain(fileName) {
+  
+  const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
+  const selectedValue = imgSelector.value;
+  imgFrameContainer.innerHTML = '';
+  if (selectedValue) {
+    const img = document.createElement('img');
+    img.src = `http://localhost:8000/results/${selectedValue}`;
+    img.alt = `${selectedValue}`;
+    
+    // Optional: Add loading indicator
+    img.style.display = 'none';
+    imgFrameContainer.appendChild(img);
+    
+    // Handle image load
+    img.onload = () => {
+        img.style.display = 'block';
+    };
+    
+    // Handle load errors
+    img.onerror = () => {
+      imgFrameContainer.innerHTML = '<p style="color: red;">Failed to load image</p>';
+    };
+  } else {
+      // Show placeholder when no selection
+      imgFrameContainer.innerHTML = '<span class="placeholder">Select an image from the dropdown</span>';
+  }
+}
+
+document.getElementById("fileInput").addEventListener("change", async () => {
+  refreshFileSelector();
+});
+
+
+imgSelector.addEventListener('change', () => {
+
+  refreshImageOfMain();
+
+});
+
+refreshFileSelector();
+refreshImageOfMain();

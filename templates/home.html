@@ -186,10 +186,8 @@
     <label for="fileInput" style="cursor: pointer; background-color: #333333; color: white; padding: 8px 16px; border-radius: 4px;">
         Выбрать изображение
     </label>
-    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-
-
-    <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
+    <input type="file" multiple id="fileInput"  accept="image/*" style="display: none;">
+     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
 
      <div class="cart-panel" id="cartPanel">
       <h3 class="cart-title">Ожидаемый комплект</h3>
@@ -222,7 +220,9 @@
           {% endfor %}
         </div>
 
-    </div>
+      </div>
+      <!-- выбор картинеик по середине-->
+
         <img id="resultImg" style="
             max-width: 60vw;
             max-height: 80vh;
@@ -232,7 +232,25 @@
             display: block; /* важно для правильного выравнивания */
         ">
 
-        <!-- Listbox справа -->
+
+    
+    <div class="selector_frame" style="
+    max-height: 80vh;
+
+    ">
+
+      <label for="mySelect">Choose an option:</label>
+      <!-- <div> -->
+        <select id="mySelect">
+
+        </select>
+        <!-- <div> -->
+
+      <div id="imgFrame"> 
+        <!-- <img src="http://localhost:8000/results/86deabba7e29be33e6ed2bfa64a64eff_example_3.png">  </img> -->
+      </div>
+    </div>
+
     <div class="cart-panel" id="resultPanel">
       <h3 class="cart-title">Распознанный комплект</h3>
 
@@ -258,10 +276,6 @@
         {% endfor %}
       </div>
     </div>
-
-
-
-
     </div>
     <div>
         <button id="showAeroToolsTable">Показать актуальное состояние базы</button>
@@ -279,20 +293,37 @@
         const resultImg = document.getElementById('resultImg');
 
         input.addEventListener('change', async () => {
-            const file = input.files[0];
-            if (!file) return;
+            const files = input.files;
+            if (!files) return;
 
             const formData = new FormData();
-            formData.append('file', file);
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
 
-            const response = await fetch("/process-image", { method: "POST", body: formData });
-            const data = await response.json();
 
+            try {
+                const response = await fetch('/upload-multiple-files-advanced/', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            // Отображаем изображение
-            const byteArray = new Uint8Array(data.image.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-            const blob = new Blob([byteArray], { type: "image/jpeg" });
-            resultImg.src = URL.createObjectURL(blob);
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Успешная загрузка:', result.message);
+                    alert(`Файлы успешно загружены! 
+                        ${result.message}`);
+                } else {
+                    const result = await response.json();
+                    console.error('Ошибка загрузки:', response.statusText);
+                    alert(`Ошибка при загрузке файлов. 
+                    ${result.detail}`);
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+                alert('Ошибка при отправке запроса на сервер.');
+            }
+
         });
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -347,6 +378,7 @@
             });
           });
         });
-</script>
+        
+      </script>
 </body>
 </html>

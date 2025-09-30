@@ -13,6 +13,7 @@ from PIL import Image
 from tqdm import tqdm
 from ultralytics import SAM, YOLO
 from ultralytics.engine.results import Boxes, Masks
+from constants import TOOL_CLASSES
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -102,26 +103,13 @@ def pipeline(img: Image.Image, type="yolo"):
         "fast_sam": process_by_fast_sam,
     }
 
-    tools_classes = [
-        "screw_flat",
-        "screw_plus",
-        "offset_plus_screw",
-        "kolovorot",
-        "safety_pliers",
-        "pliers",
-        "shernitsa",
-        "adjustable_wrench",
-        "can_opener",
-        "open_end_wrench",
-        "side_cutters",
-    ]
-
     results = processing_types[type](img)
     boxes = results[0].boxes
     indexes = results[0].boxes.cls.tolist()
-    classes = [tools_classes[int(x)] for x in indexes]
+    classes = [TOOL_CLASSES[int(x)] for x in indexes]
 
     annotated_image = results[0].plot()
+
 
     # objects = preprocess_for_clf(img, boxes)
     # probs = process_by_clf(objects)
