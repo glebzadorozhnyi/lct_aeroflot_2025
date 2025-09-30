@@ -15,14 +15,13 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from PIL import Image
-from ultralytics import YOLO
 
-import pipeline
+from pipeline import Pipeline
 from constants import TOOL_CLASSES
 from db import AeroTool, AeroToolDelivery, db
 
-model = YOLO("yolo11n-seg.pt")
 templates = Jinja2Templates(directory="templates")
+pipeline = Pipeline()
 
 
 WORK_DIR = Path(".workdir")
@@ -99,7 +98,7 @@ def process_images_alt(image_path: Path):
         if img is None:
             return {"error": f"Не удалось прочитать изображение {image_name}"}
 
-        probs, annotated_image = pipeline.pipeline(pil_img, "yolo")
+        probs, annotated_image = pipeline(pil_img)
         Image.fromarray(annotated_image).save(WORK_DIR / f"handled_images/{image_name}")
 
     return probs
