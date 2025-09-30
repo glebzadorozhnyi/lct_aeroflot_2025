@@ -18,13 +18,60 @@
             margin-bottom: 20px;
         }
 
-        #imgFrame img {
-            height: 500px;      /* фиксированная высота */
-            width: auto;         /* сохраняем пропорции */
-            display: block;
-            margin: 0 auto;      /* по центру горизонтально */
-            border-radius: 24px; /* скруглённые края */
-        }
+    #imgFrame {
+        position: relative;
+        max-height: 500px;
+        overflow: hidden;
+    }
+
+    #imgFrame img {
+        height: 500px;      /* фиксированная высота */
+        width: auto;         /* сохраняем пропорции */
+        display: block;
+        margin: 0 auto;      /* по центру горизонтально */
+        border-radius: 24px; /* скруглённые края */
+    }
+
+    .nav-btn {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50px;
+        background-color: rgba(0,0,0,0.2);
+        color: white;
+        border: none;
+        cursor: pointer;
+        opacity: 0; /* изначально невидима */
+        transition: opacity 0.3s;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-btn:hover {
+        opacity: 1; /* появляется только при наведении на саму кнопку */
+    }
+
+    /* Левая кнопка */
+    .nav-btn.left {
+        left: 0;
+        border-radius: 24px 0 0 24px;
+        background-image: url('static/left.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 24px 24px;
+    }
+
+    /* Правая кнопка */
+    .nav-btn.right {
+        right: 0;
+        border-radius: 0 24px 24px 0;
+        background-image: url('static/right.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 24px 24px;
+    }
         .cart-panel{
           display: inline-flex;
           padding: 32px 34px;
@@ -213,16 +260,48 @@
 
     <div style="display: flex; gap: 60px; max-width: 100%; align-items: flex-start;">
 
-    <div>
-        <!-- Контейнер для изображения -->
-        <div id="imgFrame"></div>
+<div>
+    <!-- Контейнер для изображения -->
+    <div id="imgFrame"></div>
 
-        <!-- Кнопка под изображением -->
-        <label for="fileInput" style="cursor: pointer; background-color: #333333; color: white; padding: 8px 16px; border-radius: 4px; display: inline-block; margin-top: 8px;">
-            Выбрать изображение
+    <!-- Контейка для кнопок под изображением -->
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <!-- Левая кнопка -->
+        <label for="fileInput" style="
+            cursor: pointer;
+            background-color: #6169FF;
+            color: white;
+            padding: 17px 34px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            gap: 8px;
+        ">
+            <img src="static/plus.png" alt="+" style="width: 22px; height: 22px;">
+            Добавить изображение
         </label>
         <input type="file" multiple id="fileInput" accept="image/*" style="display: none;">
+
+        <!-- Правая кнопка -->
+        <label for="clearDbBtn" style="
+            cursor: pointer;
+            border: 1px solid #D0D0D0;
+            background: #FFF;
+            color: #141414;
+            padding: 17px 34px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            gap: 8px;
+        ">
+            <img src="static/refresh.png" alt="+" style="width: 22px; height: 22px;">
+            Начать заново
+        </label>
+        <input type="button" id="clearDbBtn" style="display: none;" onclick="clearDatabase()">
     </div>
+</div>
 
 
     <div class="cart-panel" id="cartPanel">
