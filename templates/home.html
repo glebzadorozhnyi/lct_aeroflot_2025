@@ -20,12 +20,12 @@
 
     #imgFrame {
         position: relative;
-        max-height: 500px;
+        max-height: 520px;
         overflow: hidden;
     }
 
     #imgFrame img {
-        height: 500px;      /* фиксированная высота */
+        height: 520px;      /* фиксированная высота */
         width: auto;         /* сохраняем пропорции */
         display: block;
         margin: 0 auto;      /* по центру горизонтально */
@@ -260,12 +260,15 @@
 
     <div style="display: flex; gap: 60px; max-width: 100%; align-items: flex-start;">
 
-<div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
     <!-- Контейнер для изображения -->
     <div id="imgFrame"></div>
 
-    <!-- Контейка для кнопок под изображением -->
-    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+    <!-- Счётчик кадров -->
+    <span id="frameCounter" style="font-size: 16px; font-weight: 500; margin-top: 8px;">0 / 0</span>
+
+    <!-- Контейнер для кнопок под изображением -->
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;">
         <!-- Левая кнопка -->
         <label for="fileInput" style="
             cursor: pointer;
