@@ -1,0 +1,8 @@
+img {
+    max-width: 60vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    border: 1px solid #ccc;
+    display: block;
+}

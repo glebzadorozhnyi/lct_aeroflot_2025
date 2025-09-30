@@ -1,4 +1,8 @@
 
+
+const imgSelector = document.getElementById('mySelect');
+const containerInputImages = document.getElementById('fileInput');
+
 function resetToolTable() {
   
   const parentElement = document.querySelector('tbody');
@@ -160,10 +164,8 @@ function genHtmlRawOption(fileName) {
   return option;
 }
 
-const imgSelector = document.getElementById('mySelect');
 
-
-async function refreshFileSelector(fileName) {
+async function refreshFileSelector() {
   
   const response = await fetch("/get_all_uploaded_files", {
     method: "GET",
@@ -178,7 +180,7 @@ async function refreshFileSelector(fileName) {
 }
 
 
-async function refreshImageOfMain(fileName) {
+async function refreshImageOfMain() {
   
   const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
   const selectedValue = imgSelector.value;
@@ -207,14 +209,99 @@ async function refreshImageOfMain(fileName) {
   }
 }
 
+async function refreshFrameDetectStatus(deliveryIdFile) {
+  // const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
+  // const selectedValue = imgSelector.value;
+  
+  const cardListContainer = document.getElementById('status-card-list'); // Ваш селектор (например, <button>)
+  if (cardListContainer && cardListContainer.innerHTML !== '' )
+  {
+    cardListContainer.innerHTML = '';
+  }
+
+  const selectedValue = imgSelector.value;
+
+  const cartRowDiv = document.createElement('div');
+  cartRowDiv.class = "cart-row";
+  cartRowDiv.id = "test";
+  cartRowDiv.text = "test";
+  
+  cardListContainer.appendChild(cartRowDiv);
+  // imgFrameContainer.appendChild(img);
+  // imgFrameContainer.innerHTML = '';
+  // if (selectedValue) {
+  //   const img = document.createElement('img');
+  //   img.src = `http://localhost:8000/results/${selectedValue}`;
+  //   img.alt = `${selectedValue}`;
+    
+  //   // Optional: Add loading indicator
+  //   img.style.display = 'none';
+  //   imgFrameContainer.appendChild(img);
+    
+  //   // Handle image load
+  //   img.onload = () => {
+  //       img.style.display = 'block';
+  //   };
+    
+  //   // Handle load errors
+  //   img.onerror = () => {
+  //     imgFrameContainer.innerHTML = '<p style="color: red;">Failed to load image</p>';
+  //   };
+  // } else {
+  //     // Show placeholder when no selection
+  //     imgFrameContainer.innerHTML = '<span class="placeholder">Select an image from the dropdown</span>';
+  // }
+}
+
+
+
 document.getElementById("fileInput").addEventListener("change", async () => {
   refreshFileSelector();
 });
 
 
+
 imgSelector.addEventListener('change', () => {
 
   refreshImageOfMain();
+  refreshFrameDetectStatus();
+
+
+});
+
+containerInputImages.addEventListener('change', async () => {
+  const files = containerInputImages.files;
+  if (!files) return;
+
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+  }
+
+
+  try {
+      const response = await fetch('/upload-multiple-files-advanced/', {
+          method: 'POST',
+          body: formData
+      });
+
+      if (response.ok) {
+          const result = await response.json();
+          console.log('Успешная загрузка:', result.message);
+          alert(`Файлы успешно загружены! 
+              ${result.message}`);
+          refreshFileSelector();
+          refreshImageOfMain();
+      } else {
+          const result = await response.json();
+          console.error('Ошибка загрузки:', response.statusText);
+          alert(`Ошибка при загрузке файлов. 
+          ${result.detail}`);
+      }
+  } catch (error) {
+      console.error('Ошибка при отправке запроса:', error);
+      alert('Ошибка при отправке запроса на сервер.');
+  }
 
 });
 
