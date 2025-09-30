@@ -1,5 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Mapped
 from sqlalchemy import Boolean, Column, Integer, String, create_engine
+from constants import TOOL_CLASSES
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///.workdir/sql_app.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
@@ -91,21 +92,9 @@ def check_exist_tool_in_db_by_name(name) -> bool:
 
 def fill_test_data():
     deliveries = [1, 2, 3]
-    tool_types = [
-        "screw_flat",  # 1. Плоская отвертка (-)
-        "screw_plus",  # 2. Крестовая отвертка (+)
-        "offset_plus_screw",  # 3. отвертка на смещенный крест
-        "kolovorot",  # 4. Коловорот
-        "safety_pliers",  # 5. Пассатижи контровочные
-        "pliers",  # 6. Пассатижи
-        "shernitsa",  # 7. Шерница
-        "adjustable_wrench",  # 8. Разводной ключ
-        "can_opener",  # 9. Открывалка для банок с маслом
-        "open_end_wrench",  # 10. Ключ рожковый накидной 3/4
-        "side_cutters",  # 11. Бокорезы
-    ]
+
     for i_delevery in deliveries:
-        for i_tool_type in tool_types:
+        for i_tool_type in TOOL_CLASSES:
             new_tool_unique_name = f"{i_tool_type}_{i_delevery}"
             if not check_exist_tool_in_db_by_name(new_tool_unique_name):
                 screw_plus = AeroTool(

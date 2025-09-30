@@ -189,8 +189,6 @@ async def upload_multiple_files_advanced(
                     "data": formatted_date_time,
                 }
             )
-            # add_delivery_set(hash_id=int(file_hash), image_file_id = unique_filename, datatime= formatted_date_time)
-            print("_______________________TEST_____________________________")
 
             tool_counter: dict = Counter(probs)
             for i_tool in TOOL_CLASSES:
@@ -282,11 +280,18 @@ def get_get_json_report():
     return list_of_uploaded_files
 
 
-@app.get("/api/get_state_for_delivery/{delivery_id}")
+@app.get("/api/get_state_for_delivery_by_id/{delivery_id}")
 def get_state_for_delivery_1(delivery_id: int):
-    report = db.query(AeroTool).filter(AeroTool.delivery_id == delivery_id).all()
+    report = db.query(AeroToolDelivery).filter(AeroToolDelivery.delivery_id == delivery_id).all()
     if not report:
         return JSONResponse(status_code=404, content={"message": "База пуста"})
+    return report
+
+@app.get("/api/get_state_for_delivery_by_name/{delivery_id_file_name}")
+def get_state_for_delivery_1(delivery_id_file_name):
+    report = db.query(AeroToolDelivery).filter(AeroToolDelivery.image_file_id == delivery_id_file_name).first()
+    if not report:
+        return JSONResponse(status_code=404, content={"message": "\"delivery_id_file_name\" not found"})
     return report
 
 

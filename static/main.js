@@ -209,18 +209,42 @@ async function refreshImageOfMain() {
   }
 }
 
+async function refreshFrameDetectStatus() {
+  // refreshFrameDetectStatus
+  const selectedValue = imgSelector.value;
+
+  const response = await fetch(`/api/get_state_for_delivery_by_name/${selectedValue}`, {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+  });
+  // если запрос прошел нормально
+  if (response.ok === true) {
+      // получаем данные
+      const deliveryItemData = await response.json();
+      document.getElementById('table_12').textContent =deliveryItemData.founded_screw_flat;
+      document.getElementById('table_22').textContent =deliveryItemData.founded_screw_plus;
+      document.getElementById('table_32').textContent =deliveryItemData.founded_offset_plus_screw;
+      document.getElementById('table_42').textContent =deliveryItemData.founded_kolovorot;
+      document.getElementById('table_52').textContent =deliveryItemData.founded_safety_pliers;
+      document.getElementById('table_62').textContent =deliveryItemData.founded_pliers;
+      document.getElementById('table_72').textContent =deliveryItemData.founded_shernitsa;
+      document.getElementById('table_82').textContent =deliveryItemData.founded_adjustable_wrench;
+      document.getElementById('table_92').textContent =deliveryItemData.founded_can_opener;
+      document.getElementById('table_102').textContent =deliveryItemData.founded_open_end_wrench;
+      document.getElementById('table_112').textContent =deliveryItemData.founded_side_cutters ;    
+      console.log(deliveryItemData);
+  }
+
+}
+
 document.getElementById("fileInput").addEventListener("change", async () => {
   refreshFileSelector();
 });
 
-
 imgSelector.addEventListener('change', () => {
-
   refreshImageOfMain();
-
+  refreshFrameDetectStatus();
 });
-
-
 
 containerInputImages.addEventListener('change', async () => {
   const files = containerInputImages.files;
