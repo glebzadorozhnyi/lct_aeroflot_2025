@@ -1,4 +1,8 @@
 
+
+const imgSelector = document.getElementById('mySelect');
+const containerInputImages = document.getElementById('fileInput');
+
 function resetToolTable() {
   
   const parentElement = document.querySelector('tbody');
@@ -160,10 +164,8 @@ function genHtmlRawOption(fileName) {
   return option;
 }
 
-const imgSelector = document.getElementById('mySelect');
 
-
-async function refreshFileSelector(fileName) {
+async function refreshFileSelector() {
   
   const response = await fetch("/get_all_uploaded_files", {
     method: "GET",
@@ -178,7 +180,7 @@ async function refreshFileSelector(fileName) {
 }
 
 
-async function refreshImageOfMain(fileName) {
+async function refreshImageOfMain() {
   
   const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
   const selectedValue = imgSelector.value;
@@ -215,6 +217,44 @@ document.getElementById("fileInput").addEventListener("change", async () => {
 imgSelector.addEventListener('change', () => {
 
   refreshImageOfMain();
+
+});
+
+
+
+containerInputImages.addEventListener('change', async () => {
+  const files = containerInputImages.files;
+  if (!files) return;
+
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+  }
+
+
+  try {
+      const response = await fetch('/upload-multiple-files-advanced/', {
+          method: 'POST',
+          body: formData
+      });
+
+      if (response.ok) {
+          const result = await response.json();
+          console.log('Успешная загрузка:', result.message);
+          alert(`Файлы успешно загружены! 
+              ${result.message}`);
+          refreshFileSelector();
+          refreshImageOfMain();
+      } else {
+          const result = await response.json();
+          console.error('Ошибка загрузки:', response.statusText);
+          alert(`Ошибка при загрузке файлов. 
+          ${result.detail}`);
+      }
+  } catch (error) {
+      console.error('Ошибка при отправке запроса:', error);
+      alert('Ошибка при отправке запроса на сервер.');
+  }
 
 });
 
