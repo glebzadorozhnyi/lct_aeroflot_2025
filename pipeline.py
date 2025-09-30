@@ -1,40 +1,20 @@
 import logging
 from typing import Sequence
 
-import cv2
 import numpy as np
 import onnxruntime as ort
-import torch
 from PIL import Image
-
-# from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
-# from sam2.build_sam import build_sam2
-# from sam2.sam2_image_predictor import SAM2ImagePredictor
-from tqdm import tqdm
 from ultralytics import SAM, YOLO
-from ultralytics.engine.results import Boxes, Masks
-from constants import TOOL_CLASSES
+from ultralytics.engine.results import Boxes
+
+from constants import TOOL_CLASSES, TOOL_CLASSES_RU
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-# def process_by_sam2(img: Image.Image):
-#     sam2_checkpoint = "./models/sam2.1_hiera_tiny.pt"
-#     model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
-
-#     sam2_model = build_sam2(model_cfg, sam2_checkpoint, device="cpu")
-
-#     mask_generator = SAM2AutomaticMaskGenerator(sam2_model)
-
-#     with torch.inference_mode(), torch.autocast("cpu", dtype=torch.bfloat16):
-#         masks = mask_generator.generate(np.array(img))
-
-#     return masks
-
-
 def process_by_yolo(img: Image.Image):
     model = YOLO("models/best.pt")
-    results = model.predict(img, verbose=False, conf=0.5, device="cpu")
+    results = model.predict(img, verbose=False, conf=0.5, device="0", iou=0.1)
     logging.info(f"Detected {len(results)} objects")
     return results
 
@@ -73,7 +53,7 @@ def preprocess_for_clf(img: Image.Image, boxes: Boxes):
 
 
 def process_by_clf(instruments: Sequence[Image.Image]):
-    model_path = "models/clf.onnx"
+    model_path = "models/clf_screw.onnx"
 
     sess_options = ort.SessionOptions()
     sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
@@ -84,14 +64,12 @@ def process_by_clf(instruments: Sequence[Image.Image]):
         providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
     )
     input_name = session.get_inputs()[0].name
-    input_shape = session.get_inputs()[0].shape
 
     probs = []
     for instrument in instruments:
         p = session.run(["p"], {input_name: np.array(instrument)[None, ...]})[0][0]
         probs.append(p.tolist())
 
-    logging.info(f"Probs from classifier: {probs}")
     return probs
 
 
@@ -102,18 +80,15 @@ def pipeline(img: Image.Image, type="yolo"):
         "sam2_ultra": process_by_sam2_ultra,
         "fast_sam": process_by_fast_sam,
     }
-
     results = processing_types[type](img)
-    boxes = results[0].boxes
+
+    locale_names = {i: tool for i, tool in enumerate(TOOL_CLASSES_RU)}
+    results[0].names = locale_names
+    annotated_image_yolo = results[0].plot()
     indexes = results[0].boxes.cls.tolist()
     classes = [TOOL_CLASSES[int(x)] for x in indexes]
 
-    annotated_image = results[0].plot()
-
-
-    # objects = preprocess_for_clf(img, boxes)
-    # probs = process_by_clf(objects)
-    return classes, annotated_image
+    return classes, annotated_image_yolo
 
 
 if __name__ == "__main__":
