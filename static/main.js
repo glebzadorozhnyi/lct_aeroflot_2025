@@ -53,7 +53,7 @@ async function setDetectState(aeroTool_id){
       const error = await response.json();
       console.log(error.message);
   }
-  getAeroTools();
+  renewDeliveryTable();
 }
 
 async function unsetDetectState(aeroTool_id){
@@ -73,7 +73,7 @@ async function unsetDetectState(aeroTool_id){
       const error = await response.json();
       console.log(error.message);
   }
-  getAeroTools();
+  renewDeliveryTable();
 }
 
 
@@ -85,44 +85,49 @@ async function deleteTool(aeroTool_id){
 }
 
 
-function genHtmlRawOfTool(aeroTool) {
-  
+async function genHtmlRawOfDeliveryBase(aeroToolDelivery) {
+
+  // console.log(`${aeroToolDelivery}`);
+  console.log(aeroToolDelivery.image_file_id);
+
+
+
   const tr = document.createElement("tr");
-  tr.setAttribute("data-rowid", aeroTool.id);
+  // tr.setAttribute("data-rowid", aeroToolDelivery.id);
+  tr.setAttribute("data-rowid", "1");
 
   const nameTd = document.createElement("td");
-  nameTd.append(aeroTool.name);
-  tr.append(nameTd);
+  nameTd.append(aeroToolDelivery.image_file_id);
+  tr.appendChild(nameTd);
 
   const typeTd = document.createElement("td");
-  typeTd.append(aeroTool.type);
+  typeTd.append(aeroToolDelivery.id);
   tr.append(typeTd);
 
   const detectStateTd = document.createElement("td");
-  detectStateTd.append(aeroTool.detect_state);
+  detectStateTd.append(aeroToolDelivery.id);
   tr.append(detectStateTd);
 
   const linksTd = document.createElement("td");
 
-  const setDetectStateLink = document.createElement("button"); 
-  setDetectStateLink.append("Set \"detected\"");
-  setDetectStateLink.addEventListener("click", async() => await setDetectState(aeroTool.id));
-  linksTd.append(setDetectStateLink);
+  // const setDetectStateLink = document.createElement("button"); 
+  // setDetectStateLink.append("Set \"detected\"");
+  // setDetectStateLink.addEventListener("click", async() => await setDetectState(aeroTool.id));
+  // linksTd.append(setDetectStateLink);
 
-  const unsetDetectStateLink = document.createElement("button"); 
-  unsetDetectStateLink.append("Unset \"detected\"");
-  unsetDetectStateLink.addEventListener("click", async () => await unsetDetectState(aeroTool.id));
-  linksTd.append(unsetDetectStateLink);
+  // const unsetDetectStateLink = document.createElement("button"); 
+  // unsetDetectStateLink.append("Unset \"detected\"");
+  // unsetDetectStateLink.addEventListener("click", async () => await unsetDetectState(aeroTool.id));
+  // linksTd.append(unsetDetectStateLink);
 
-  // const editLink = document.createElement("button"); 
+  const editLink = document.createElement("button"); 
   // editLink.append("Edit");
   // editLink.addEventListener("click", async() => await editTool(aeroTool.id));
-  // linksTd.append(editLink);
+  linksTd.append(editLink);
 
-  // const removeLink = document.createElement("button"); 
-  // removeLink.append("Delete");
-  // removeLink.addEventListener("click", async () => await deleteTool(aeroTool.id));
-  // linksTd.append(removeLink);
+  const removeLink = document.createElement("button"); 
+  removeLink.append("Delete");
+  linksTd.append(removeLink);
 
   tr.appendChild(linksTd);
 
@@ -132,29 +137,98 @@ function genHtmlRawOfTool(aeroTool) {
 
 
 
-async function getAeroTools() {
-  resetToolTable();
+function getTdWithAttr(attr){
+  // const td=document.createAttribute
+
+  const td = document.createElement('td');
+  td.textContent = attr;
+  return td;
+  
+   
+}
+
+async function renewDeliveryTable() {
+    resetToolTable();
   // отправляет запрос и получаем ответ
-  const response = await fetch("/api/get_state_for_delivery/1", {
+  const response = await fetch("/api/get_all_deliveries", {
       method: "GET",
       headers: { "Accept": "application/json" }
   });
+
+  const container = document.getElementById('tableContainer');
+
   // если запрос прошел нормально
   if (response.ok === true) {
-      // получаем данные
-      const aeroTools = await response.json();
-      const rows = document.querySelector("tbody");
-      // добавляем полученные элементы в таблицу
-      aeroTools.forEach(aeroTool => rows.append(genHtmlRawOfTool(aeroTool)));
+      const jsonData = await response.json();
+
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      // jsonDa ta.forEach(item => {
+        const headerRow = document.createElement('tr');
+        // const headers = Object.keys(item);
+        const headers = ["id", "upload_time", 
+          "screw_flat",  // 1. Плоская отвертка (-)
+          "screw_plus",  // 2. Крестовая отвертка (+)
+          "offset_plus_screw",  // 3. отвертка на смещенный крест
+          "kolovorot",  // 4. Коловорот
+          "safety_pliers",  // 5. Пассатижи контровочные
+          "pliers",  // 6. Пассатижи
+          "shernitsa",  // 7. Шерница
+          "adjustable_wrench",  // 8. Разводной ключ
+          "can_opener",  // 9. Открывалка для банок с маслом
+          "open_end_wrench",  // 10. Ключ рожковый накидной 3/4
+          "side_cutters",  // 11. Бокорезы
+      
+        ];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+
+        
+        thead.appendChild(headerRow);
+
+
+      jsonData.forEach(item => {
+        
+        console.log(item.id);
+        const tbody = document.createElement('tbody');
+
+        table.appendChild(thead);  
+          // Create data row
+          const dataRow = document.createElement('tr');
+          dataRow.appendChild(getTdWithAttr(item.id));
+          dataRow.appendChild(getTdWithAttr(item.datatime));
+          dataRow.appendChild(getTdWithAttr(item.founded_screw_flat));
+          dataRow.appendChild(getTdWithAttr(item.founded_screw_plus));
+          dataRow.appendChild(getTdWithAttr(item.founded_offset_plus_screw));
+          dataRow.appendChild(getTdWithAttr(item.founded_kolovorot));
+          dataRow.appendChild(getTdWithAttr(item.founded_safety_pliers));
+          dataRow.appendChild(getTdWithAttr(item.founded_pliers));
+          dataRow.appendChild(getTdWithAttr(item.founded_shernitsa));
+          dataRow.appendChild(getTdWithAttr(item.founded_adjustable_wrench));
+          dataRow.appendChild(getTdWithAttr(item.founded_can_opener));
+          dataRow.appendChild(getTdWithAttr(item.founded_open_end_wrench));
+          dataRow.appendChild(getTdWithAttr(item.founded_side_cutters));   
+          
+
+          tbody.appendChild(dataRow);
+          table.appendChild(tbody);
+    
+          container.appendChild(table);
+          container.appendChild(document.createElement('br')); // Add a line break for separation
+      });
+  
+
   }
 }
 
 document.getElementById("showAeroToolsTable").addEventListener("click", async () => {
   console.log(`Hello! Init table...`);
-  getAeroTools();
+  renewDeliveryTable();
 
 });
-
 
 function genHtmlRawOption(fileName) {
   
@@ -164,10 +238,9 @@ function genHtmlRawOption(fileName) {
   return option;
 }
 
-
 async function refreshFileSelector() {
   
-  const response = await fetch("/get_all_uploaded_files", {
+  const response = await fetch("/api/get_all_uploaded_files", {
     method: "GET",
     
     headers: { "Accept": "application/json" }
@@ -178,7 +251,6 @@ async function refreshFileSelector() {
 
   countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
 }
-
 
 async function refreshImageOfMain() {
   
