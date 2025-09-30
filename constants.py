@@ -1,15 +1,13 @@
-
-
 TOOL_CLASSES = [
-    "screw_flat",
-    "screw_plus",
-    "offset_plus_screw",
-    "kolovorot",
-    "safety_pliers",
-    "pliers",
-    "shernitsa",
-    "adjustable_wrench",
-    "can_opener",
-    "open_end_wrench",
-    "side_cutters",
+    "screw_flat",  # 1. Плоская отвертка (-)
+    "screw_plus",  # 2. Крестовая отвертка (+)
+    "offset_plus_screw",  # 3. отвертка на смещенный крест
+    "kolovorot",  # 4. Коловорот
+    "safety_pliers",  # 5. Пассатижи контровочные
+    "pliers",  # 6. Пассатижи
+    "shernitsa",  # 7. Шерница
+    "adjustable_wrench",  # 8. Разводной ключ
+    "can_opener",  # 9. Открывалка для банок с маслом
+    "open_end_wrench",  # 10. Ключ рожковый накидной 3/4
+    "side_cutters",  # 11. Бокорезы
 ]
