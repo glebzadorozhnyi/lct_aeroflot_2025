@@ -12,7 +12,7 @@ class Pipeline:
         results = self.model.predict(img, verbose=False, conf=0.5, device="0", iou=0.1)
         return results
 
-    def pipeline(self, img: Image.Image):
+    def process(self, img: Image.Image):
         results = self.process_by_yolo(img)
 
         locale_names = {i: tool for i, tool in enumerate(TOOL_CLASSES_RU)}
@@ -24,7 +24,7 @@ class Pipeline:
         return classes, annotated_image_yolo
 
     def __call__(self, img):
-        return self.pipeline(img=img)
+        return self.process(img=img)
 
 
 if __name__ == "__main__":
