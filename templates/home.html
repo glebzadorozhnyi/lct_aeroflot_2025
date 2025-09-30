@@ -187,53 +187,6 @@
         Выбрать изображение
     </label>
     <input type="file" multiple id="fileInput"  accept="image/*" style="display: none;">
-     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
-
-     <div class="cart-panel" id="cartPanel">
-      <h3 class="cart-title">Ожидаемый комплект</h3>
-
-
-
-
-        <div class="cart-list" style="
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            width: 260px;
-            display: block; /* важно для правильного выравнивания */
-        ">
-          {% for item in cart_items %}
-          <div class="cart-row" data-id="{{ item.id }}">
-            <div class="cart-info">
-              <div class="cart-name">{{ item.name }}</div>
-            </div>
-
-            <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
-              <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
-              <input class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*"
-                     value="1" aria-label="Количество">
-              <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-
-      </div>
-      <!-- выбор картинеик по середине-->
-
-        <img id="resultImg" style="
-            max-width: 60vw;
-            max-height: 80vh;
-            width: auto;
-            height: auto;
-            border: 1px solid #ccc;
-            display: block; /* важно для правильного выравнивания */
-        ">
-
-
-    
     <div class="selector_frame" style="
     max-height: 80vh;
 
@@ -245,37 +198,60 @@
 
         </select>
         <!-- <div> -->
+     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
 
-      <div id="imgFrame"> 
+
+
+      <div id="imgFrame" style="
+            max-height: 80vh;
+            width: 50vw;
+            height: auto;
+            border: 1px solid #ccc;
+            display: block; ">
         <!-- <img src="http://localhost:8000/results/86deabba7e29be33e6ed2bfa64a64eff_example_3.png">  </img> -->
       </div>
-    </div>
 
-    <div class="cart-panel" id="resultPanel">
-      <h3 class="cart-title">Распознанный комплект</h3>
+         <div class="cart-panel" id="cartPanel">
+      <h3 class="cart-title">Ожидаемый комплект</h3>
 
-      <div class="cart-list" style="
+
+
+
+        <div class="cart-list" style="
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
-            width: 260px;
+            width: 300px;
             display: block; /* важно для правильного выравнивания */
-      ">
+        ">
         {% for item in cart_items %}
-        <div class="cart-row" data-id="{{ item.id }}">
-          <div class="cart-info">
-            <div class="cart-name">{{ item.name }}</div>
-          </div>
+          <div class="cart-row" data-id="{{ item.id }}">
+            <div class="cart-info">
+              <div class="cart-name">{{ item.name }}</div>
+            </div>
 
-          <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
-            <span class="qty-text">{{ item.qty }} 1/1</span>
+            <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
+              <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
+
+              <!-- уникальный id для input -->
+              <input id="table_{{ loop.index }}1" class="qty-input" type="text"
+                     inputmode="numeric" pattern="[0-9]*"
+                     value="1" aria-label="Количество">
+
+              <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
+
+              <!-- уникальный id для span -->
+              <span id="table_{{ loop.index }}2" class="qty-text">{{ item.qty }}1</span>
+            </div>
           </div>
-        </div>
         {% endfor %}
+        </div>
+
       </div>
     </div>
+
     </div>
     <div>
         <button id="showAeroToolsTable">Показать актуальное состояние базы</button>
@@ -309,6 +285,7 @@
 
               // Находим input с количеством в этом ряду
               const input = row.querySelector(".qty-input");
+              // Точно так же можно находить текст const text = row.querySelector(".qty-text");
               if (!input) return;
 
               // Получаем текущее значение, увеличиваем на 1
@@ -331,7 +308,9 @@
 
               // Находим input с количеством в этом ряду
               const input = row.querySelector(".qty-input");
+              // Точно так же можно находить текст const text = row.querySelector(".qty-text");
               if (!input) return;
+
 
               // Получаем текущее значение, увеличиваем на 1
               let qty = parseInt(input.value) || 0;
