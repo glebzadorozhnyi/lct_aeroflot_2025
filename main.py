@@ -19,7 +19,7 @@ from ultralytics import YOLO
 
 import pipeline
 from constants import TOOL_CLASSES
-from db import AeroTool, AeroToolDelivery, db
+from db import AeroToolDelivery, db
 
 model = YOLO("yolo11n-seg.pt")
 templates = Jinja2Templates(directory="templates")
@@ -178,8 +178,6 @@ async def upload_multiple_files_advanced(
 
             probs = process_images_alt(image_path=file_location)
 
-            # print(f"probs {probs}")
-
             uploaded_files.append(
                 {
                     "original_filename": file.filename,
@@ -229,37 +227,33 @@ async def upload_multiple_files_advanced(
     )
 
 
-@app.post("/process-image")
-async def process_images(request: Request, images: list[UploadFile]):
-    image_names = []
-    for image in images:
-        image_name = image.filename
-        img_contents = image.file.read()
-        img = np.frombuffer(img_contents, np.uint8)
-        img = cv2.imdecode(img, cv2.IMREAD_COLOR)
-        pil_img = Image.fromarray(img)
-        pil_img.save(WORK_DIR / f"raw_images/{image_name}")
-        if img is None:
-            return {"error": f"Не удалось прочитать изображение {image_name}"}
+# @app.post("/process-image")
+# async def process_images(request: Request, images: list[UploadFile]):
+#     image_names = []
+#     for image in images:
+#         image_name = image.filename
+#         img_contents = image.file.read()
+#         img = np.frombuffer(img_contents, np.uint8)
+#         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
+#         pil_img = Image.fromarray(img)
+#         pil_img.save(WORK_DIR / f"raw_images/{image_name}")
+#         if img is None:
+#             return {"error": f"Не удалось прочитать изображение {image_name}"}
 
-        probs, annotated_image = pipeline.pipeline(pil_img, "yolo")
-        Image.fromarray(annotated_image).save(WORK_DIR / f"/handled_images/{image_name}")
+#         probs, annotated_image = pipeline.pipeline(pil_img, "yolo")
+#         Image.fromarray(annotated_image).save(WORK_DIR / f"/handled_images/{image_name}")
 
-        image_names.append(image_name)
+#         image_names.append(image_name)
 
-    return templates.TemplateResponse(
-        name="home.html",
-        context={
-            "request": request,
-            "first_image": image_names[0],
-            "images": image_names,
-        },
-    )
+#     return templates.TemplateResponse(
+#         name="home.html",
+#         context={
+#             "request": request,
+#             "first_image": image_names[0],
+#             "images": image_names,
+#         },
+#     )
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
 
 
 @app.get("/get_json_report")
@@ -270,7 +264,7 @@ def get_get_json_report():
     return report
 
 
-@app.get("/get_all_uploaded_files")
+@app.get("/api/get_all_uploaded_files")
 def get_get_json_report():
     # list_of_uploaded_files = db.query(AeroToolDelivery).all()
     list_of_uploaded_files = [user.image_file_id for user in db.query(AeroToolDelivery).all()]
@@ -278,6 +272,14 @@ def get_get_json_report():
     if not list_of_uploaded_files:
         return JSONResponse(status_code=404, content={"message": "База пуста"})
     return list_of_uploaded_files
+
+@app.get("/api/get_all_deliveries")
+def get_get_json_report():
+    list_of_deliveries =  db.query(AeroToolDelivery).all()
+    # print(list_of_uploaded_files)
+    if not list_of_deliveries:
+        return JSONResponse(status_code=404, content={"message": "База пуста"})
+    return list_of_deliveries
 
 
 @app.get("/api/get_state_for_delivery_by_id/{delivery_id}")
@@ -293,24 +295,6 @@ def get_state_for_delivery_1(delivery_id_file_name):
     if not report:
         return JSONResponse(status_code=404, content={"message": "\"delivery_id_file_name\" not found"})
     return report
-
-
-@app.post("/api/set_detect_state/{aero_tool_id}")
-def set_detect_state_by_id(aero_tool_id: int):
-    aero_tool = db.query(AeroTool).filter(AeroTool.id == aero_tool_id).first()
-    aero_tool.detect_state = True
-    db.commit()  # сохраняем изменения
-    db.refresh(aero_tool)
-    return aero_tool
-
-
-@app.post("/api/unset_detect_state/{aero_tool_id}")
-def unset_detect_state_by_id(aero_tool_id: int):
-    aero_tool = db.query(AeroTool).filter(AeroTool.id == aero_tool_id).first()
-    aero_tool.detect_state = False
-    db.commit()  # сохраняем изменения
-    db.refresh(aero_tool)
-    return aero_tool
 
 
 if __name__ == "__main__":

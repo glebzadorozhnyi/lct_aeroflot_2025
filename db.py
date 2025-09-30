@@ -10,21 +10,21 @@ class Base(DeclarativeBase):
     pass
 
 
-class AeroTool(Base):
-    __tablename__ = "aerotool_set"
+# class AeroTool(Base):
+#     __tablename__ = "aerotool_set"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    delivery_state = Column(String)  # "in_stock", "on_hands"
-    type = Column(
-        String,
-    )
-    delivery_id = Column(Integer,)  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
-    detect_state = Column(
-        Boolean,
-    )
+#     id = Column(Integer, primary_key=True, index=True)
+#     name = Column(String)
+#     delivery_state = Column(String)  # "in_stock", "on_hands"
+#     type = Column(
+#         String,
+#     )
+#     delivery_id = Column(Integer,)  # Наборов для выдачи может быть много и каждый инструмент принадлежит к одной из выдач
+#     detect_state = Column(
+#         Boolean,
+#     )
 
-JSONList = ["test1", "test2"]
+# JSONList = ["test1", "test2"]
 
 class AeroToolDelivery(Base):
     __tablename__ = "aerotool_set_delivery"
@@ -79,7 +79,7 @@ db = SessionLocal()
 
 
 def check_exist_tool_in_db_by_name(name) -> bool:
-    first = db.query(AeroTool).filter(AeroTool.name == name).first()
+    first = db.query(AeroToolDelivery).filter(AeroToolDelivery.image_file_id == name).first()
 
     if first:
         # print(
@@ -90,21 +90,21 @@ def check_exist_tool_in_db_by_name(name) -> bool:
         return False
 
 
-def fill_test_data():
-    deliveries = [1, 2, 3]
+# def fill_test_data():
+#     deliveries = [1, 2, 3]
 
-    for i_delevery in deliveries:
-        for i_tool_type in TOOL_CLASSES:
-            new_tool_unique_name = f"{i_tool_type}_{i_delevery}"
-            if not check_exist_tool_in_db_by_name(new_tool_unique_name):
-                screw_plus = AeroTool(
-                    name=new_tool_unique_name,
-                    type=i_tool_type,
-                    delivery_id=i_delevery,
-                    delivery_state="on_hands",
-                )
-                db.add(screw_plus)  # добавляем в бд
-    db.commit()  # сохраняем изменения
+#     for i_delevery in deliveries:
+#         for i_tool_type in TOOL_CLASSES:
+#             new_tool_unique_name = f"{i_tool_type}_{i_delevery}"
+#             if not check_exist_tool_in_db_by_name(new_tool_unique_name):
+#                 screw_plus = AeroTool(
+#                     name=new_tool_unique_name,
+#                     type=i_tool_type,
+#                     delivery_id=i_delevery,
+#                     delivery_state="on_hands",
+#                 )
+#                 db.add(screw_plus)  # добавляем в бд
+#     db.commit()  # сохраняем изменения
 
 # def add_delivery_set(hash_id, image_file_id, datatime):
 #     delivery_set = AeroToolDelivery(
@@ -120,21 +120,21 @@ def fill_test_data():
 
 def print_all_from_db():
     # получение всех объектов
-    aero_tools = db.query(AeroTool).all()
+    aero_tools = db.query(AeroToolDelivery).all()
     print("| id|           type        |         name         |")
     for i_aero_tool in aero_tools:
-        print(f"|{i_aero_tool.id:3}| {i_aero_tool.name:22}| {i_aero_tool.type:20} |")
+        print(f"|{i_aero_tool.id:3}| {i_aero_tool.datatime:22}| {i_aero_tool.image_file_id:20} |")
 
 
-def get_all_uploaded_files():
-    # получение всех объектов
-    aero_tools = db.query(AeroTool).all()
-    print("| id|           type        |         name         |")
-    for i_aero_tool in aero_tools:
-        print(f"|{i_aero_tool.id:3}| {i_aero_tool.name:22}| {i_aero_tool.type:20} |")
+# def get_all_uploaded_files():
+#     # получение всех объектов
+#     aero_tools = db.query(AeroTool).all()
+#     print("| id|           type        |         name         |")
+#     for i_aero_tool in aero_tools:
+#         print(f"|{i_aero_tool.id:3}| {i_aero_tool.name:22}| {i_aero_tool.type:20} |")
 
 
 
 
-fill_test_data()
+# fill_test_data()
 # print_all_from_db()
