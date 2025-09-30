@@ -24,6 +24,14 @@
         overflow: hidden;
     }
 
+    #checkStatus {
+        margin-top: 20px;       /* Отступ сверху */
+        margin-left: 47px;      /* Отступ слева, можно менять под ширину таблицы */
+        font-size: 16px;
+        font-weight: 600;
+        text-align: left;
+    }
+
     #imgFrame img {
         height: 520px;      /* фиксированная высота */
         width: auto;         /* сохраняем пропорции */
@@ -306,7 +314,7 @@
     </div>
 </div>
 
-
+<div>
     <div class="cart-panel" id="cartPanel">
 
 
@@ -334,9 +342,14 @@
 
         </div>
 
-
       </div>
+        <div id="checkStatus"> Статус  </div>
+</div>
+
+</div>
+
     </div>
+
 
 
  </div>
@@ -353,6 +366,8 @@
         // import { refreshImageOfMain, refreshFileSelector } from '/static/main.js'
 
         function highlightDifferences() {
+        const status_box = document.getElementById(`checkStatus`);
+        let allMatch = true;
             for (let i = 1; i <= 11; i++) {
                 const input = document.getElementById(`table_${i}1`);
                 const span = document.getElementById(`table_${i}2`);
@@ -362,10 +377,18 @@
 
                 if (input.value != span.textContent) {
                     row.style.backgroundColor = "#ffcccc"; // красный фон
+                    allMatch = false;
                 } else {
                     row.style.backgroundColor = "#ffffff"; // белый фон
                 }
             }
+                if (allMatch) {
+                    status_box.textContent = "Количество инструментов соответствует ожидаемому";
+                    status_box.style.color = "green";
+                } else {
+                    status_box.textContent = "Количество инструментов не совпадает с ожидаемым";
+                    status_box.style.color = "red";
+                }
         }
 
 
