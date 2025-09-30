@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 50px;
+            margin: 90px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -16,15 +16,18 @@
         input[type="file"] {
             margin-bottom: 20px;
         }
-        img {
-            max-width: 80%;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            margin-top: 20px;
+
+        #imgFrame img {
+            height: 500px;      /* фиксированная высота */
+            width: auto;         /* сохраняем пропорции */
+            display: block;
+            margin: 0 auto;      /* по центру горизонтально */
+            border-radius: 24px; /* скруглённые края */
         }
         .cart-panel{
           display: inline-flex;
-          padding: 32px 40px;
+          padding: 32px 34px;
+          width: 510px;
           align-items: flex-start;
           gap: 64px;
           font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -49,20 +52,15 @@
           display: flex;
           flex-direction: column;
           gap: 10px;
-          max-height: 55vh;
+          max-height: 75vh;
           overflow: auto;
           padding-right: 6px;
         }
 
         .cart-row{
-          display: grid;
-          grid-template-columns: 48px 1fr auto;
-          gap: 8px;
-          height: 28px;
-          align-items: center;
-          padding: 6px;
-          border-radius: 8px;
-          border: 1px solid transparent;
+          display: flex;
+          align-items: center;   /* вертикальное центрирование */
+          gap: 5px;              /* расстояние между элементами */
         }
 
         .cart-thumb{
@@ -132,16 +130,14 @@
           border: 1px solid var(--border);
           border-radius: 6px;
           padding: 4px;
-          font-size: 13px;
+          font-size: 16px;
         }
         .qty-text {
           display: inline-block;
           min-width: 30px;
           text-align: center;
-          border: 1px solid #ccc;
-          border-radius: 3px;
           padding: 2px 6px;
-          background-color: #f9f9f9;
+          font-size: 16px;
         }
 
         .row-subtotal{
@@ -152,6 +148,14 @@
           margin-left: 6px;
           min-width: 64px;
           text-align: right;
+        }
+        .row-name {
+            width: 160px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-block;       /* ширина под содержимое */
+            font-size: 16px;
+            font-family: Roboto, Arial, sans-serif;
         }
 
         /* footer */
@@ -184,77 +188,75 @@
     </style>
 </head>
 <body>
-    <h1>Интеллектуальный детектор инструментов</h1>
-    <label for="fileInput" style="cursor: pointer; background-color: #333333; color: white; padding: 8px 16px; border-radius: 4px;">
-        Выбрать изображение
-    </label>
-    <input type="file" multiple id="fileInput"  accept="image/*" style="display: none;">
+    <div style="position: absolute; top: 30px; left: 50px; display: flex; align-items: center; gap: 10px;">
+        <img src="static/otvertka.png" style="width:48px; height:48px; border-radius:50px; border:1px #D0D0D0 solid;">
+        <span style="font-size:16px; font-weight:700; color:#141414; ">Распознаватель инструментов</span>
+    </div>
+
     <div class="selector_frame" style="
-    max-height: 80vh;
+                    max-height: 80vh;
+                    margin-top:20px;
 
     ">
 
-      <label for="mySelect">Choose an option:</label>
+
+    <label for="mySelect">Choose an option:</label>
       <!-- <div> -->
-        <select id="mySelect">
+    <select id="mySelect">
 
-        </select>
+    </select>
         <!-- <div> -->
-     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
+    <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
 
 
 
-      <div id="imgFrame" style="
-            max-height: 80vh;
-            width: 50vw;
-            height: auto;
-            border: 1px solid #ccc;
-            display: block; ">
-        <!-- <img src="http://localhost:8000/results/86deabba7e29be33e6ed2bfa64a64eff_example_3.png">  </img> -->
-      </div>
+    <div style="display: flex; gap: 60px; max-width: 100%; align-items: flex-start;">
 
-         <div class="cart-panel" id="cartPanel">
-      <h3 class="cart-title">Ожидаемый комплект</h3>
+    <div>
+        <!-- Контейнер для изображения -->
+        <div id="imgFrame"></div>
+
+        <!-- Кнопка под изображением -->
+        <label for="fileInput" style="cursor: pointer; background-color: #333333; color: white; padding: 8px 16px; border-radius: 4px; display: inline-block; margin-top: 8px;">
+            Выбрать изображение
+        </label>
+        <input type="file" multiple id="fileInput" accept="image/*" style="display: none;">
+    </div>
 
 
+    <div class="cart-panel" id="cartPanel">
 
 
-        <div class="cart-list" style="
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            width: 300px;
-            display: block; /* важно для правильного выравнивания */
-        ">
-        {% for item in cart_items %}
-          <div class="cart-row" data-id="{{ item.id }}">
-          <div class="cart-info">
-          <div class="cart-name">{{ item.name }}</div>
-          </div>
+        <div class="cart-list" style="display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 44px; align-items: center; row-gap: 26px; ">
 
-            <div class="qty-control" role="group" aria-label="Количество инструмента {{ item.id }}">
-              <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
+  <!-- Заголовки -->
+          <div style="font-weight: 700; padding: 0px 12px">Инструмент</div>
+          <div style="font-weight: 700;">Ожидается</div>
+          <div style="font-weight: 700;">Найдено</div>
 
-              <!-- уникальный id для input -->
-              <input id="table_{{ loop.index }}1" class="qty-input" type="text"
-                     inputmode="numeric" pattern="[0-9]*"
-                     value="1" aria-label="Количество">
+  <!-- Строки товаров -->
+          {% for item in cart_items %}
+                <div id="row_{{ loop.index }}" class="row-name">{{ item.name }}</div>
 
-              <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
+                <div class= "cart-row" style="display: flex; align-items: center;">
+                  <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
+                  <input id="table_{{ loop.index }}1" class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*" value="1" aria-label="Количество">
+                  <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
+                </div>
 
-              <!-- уникальный id для span -->
-              <span id="table_{{ loop.index }}2" class="qty-text">{{ item.qty }}1</span>
-            </div>
-          </div>
-        {% endfor %}
+                <div style="text-align: center;">
+                  <span id="table_{{ loop.index }}2" class="qty-text">{{ item.qty }}</span>
+                </div>
+          {% endfor %}
+
         </div>
 
+
       </div>
     </div>
 
-    </div>
+
+ </div>
     <div>
         <button id="showAeroToolsTable">Показать актуальное состояние базы</button>
         <button id="resetBtn">Сбросить</button>
@@ -270,6 +272,22 @@
 
         const resultImg = document.getElementById('resultImg');
         // import { refreshImageOfMain, refreshFileSelector } from '/static/main.js'
+
+        function highlightDifferences() {
+            for (let i = 1; i <= 11; i++) {
+                const input = document.getElementById(`table_${i}1`);
+                const span = document.getElementById(`table_${i}2`);
+                const row = document.getElementById(`row_${i}`);
+
+                if (!input || !span || !row) continue; // на всякий случай
+
+                if (input.value != span.textContent) {
+                    row.style.backgroundColor = "#ffcccc"; // красный фон
+                } else {
+                    row.style.backgroundColor = "#ffffff"; // белый фон
+                }
+            }
+        }
 
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -294,6 +312,7 @@
               let qty = parseInt(input.value) || 0;
               qty += 1;
               input.value = qty;
+              highlightDifferences();
 
               // Триггерим событие change, если есть обработчики пересчета
               input.dispatchEvent(new Event('change'));
@@ -319,6 +338,7 @@
               qty -= 1;
               if (qty < 0) qty = 0
               input.value = qty;
+              highlightDifferences();
 
               // Триггерим событие change, если есть обработчики пересчета
               input.dispatchEvent(new Event('change'));
