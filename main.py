@@ -269,7 +269,6 @@ async def process_images(request: Request, images: list[UploadFile]):
         },
     )
 
-
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
