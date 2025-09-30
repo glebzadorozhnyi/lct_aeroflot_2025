@@ -1,44 +1,36 @@
 # main.py
 
 
-
-
-from datetime import datetime
-from db import db, AeroTool
+import hashlib
+import os
+import shutil
 from collections import Counter
-from fastapi import FastAPI, File, Request, UploadFile, HTTPException
-from fastapi.responses import JSONResponse, HTMLResponse
+from datetime import datetime
+from pathlib import Path
+
+import cv2
+import numpy as np
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pathlib import Path
-from pathlib import Path
 from PIL import Image
 from ultralytics import YOLO
-from datetime import datetime
-from constants import TOOL_CLASSES
 
-
-
-import shutil
-import os
-
-import hashlib
-import cv2
-import hashlib
-import numpy as np
 import pipeline
+from constants import TOOL_CLASSES
+from db import AeroTool, AeroToolDelivery, db
 
 model = YOLO("yolo11n-seg.pt")
 templates = Jinja2Templates(directory="templates")
 
 
 WORK_DIR = Path(".workdir")
-HANDLED_IMAGES_DIR = Path(WORK_DIR/"handled_images")
-RAW_IMAGES_DIR = Path(WORK_DIR/"raw_images")
+HANDLED_IMAGES_DIR = Path(WORK_DIR / "handled_images")
+RAW_IMAGES_DIR = Path(WORK_DIR / "raw_images")
 
 HANDLED_IMAGES_DIR.mkdir(exist_ok=True)
 RAW_IMAGES_DIR.mkdir(exist_ok=True)
-
 
 
 app = FastAPI()
@@ -72,6 +64,7 @@ UPLOAD_DIR = HANDLED_IMAGES_DIR
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
+
 def validate_file(file: UploadFile) -> None:
     """Validate uploaded file"""
     # Check file extension
@@ -80,26 +73,24 @@ def validate_file(file: UploadFile) -> None:
         raise HTTPException(
             status_code=400,
             detail=f"File extension {file_extension} not allowed. "
-                   f"Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+            f"Allowed: {', '.join(ALLOWED_EXTENSIONS)}",
         )
-    
+
     # Check file size (note: this requires reading the file)
     # For large files, you might want to handle this differently
     file.file.seek(0, 2)  # Seek to end
     file_size = file.file.tell()
     file.file.seek(0)  # Reset to beginning
-    
+
     if file_size > MAX_FILE_SIZE:
         raise HTTPException(
-            status_code=400,
-            detail=f"File size exceeds {MAX_FILE_SIZE // (1024*1024)}MB limit"
+            status_code=400, detail=f"File size exceeds {MAX_FILE_SIZE // (1024 * 1024)}MB limit"
         )
 
-from db import AeroToolDelivery, db
 
 def process_images_alt(image_path: Path):
     image_name = image_path.name
-    with open (image_path, "rb") as fd:
+    with open(image_path, "rb") as fd:
         img_contents = fd.read()
 
         img = np.frombuffer(img_contents, np.uint8)
@@ -112,6 +103,7 @@ def process_images_alt(image_path: Path):
         Image.fromarray(annotated_image).save(WORK_DIR / f"handled_images/{image_name}")
 
     return probs
+
 
 def compute_file_hash(file_path, algorithm="md5"):
     """
@@ -130,10 +122,9 @@ def compute_file_hash(file_path, algorithm="md5"):
         hasher = hashlib.new(algorithm)
 
         # Open the file in binary read mode
-        with open(file_path, 'rb') as f:
-
+        with open(file_path, "rb") as f:
             # Read the file in chunks to handle large files efficiently
-            for chunk in iter(lambda: f.read(4096), b''):
+            for chunk in iter(lambda: f.read(4096), b""):
                 hasher.update(chunk)
 
         return hasher.hexdigest()
@@ -144,32 +135,31 @@ def compute_file_hash(file_path, algorithm="md5"):
         print(f"Error: Invalid hash algorithm '{algorithm}'.")
         return None
 
+
 @app.post("/upload-multiple-files-advanced/")
 async def upload_multiple_files_advanced(
     files: list[UploadFile] = File(
         ...,
         description="Multiple files to upload (max 10 files)",
-        max_length=10  # Limit number of files
-    )
+        max_length=10,  # Limit number of files
+    ),
 ):
     if len(files) == 0:
         raise HTTPException(status_code=400, detail="No files provided")
-    
+
     # if len(files) > 10:
-        # raise HTTPException(status_code=400, detail="Maximum 10 files allowed")
-    
-    
+    # raise HTTPException(status_code=400, detail="Maximum 10 files allowed")
 
     uploaded_files = []
     RAW_IMAGES_DIR.mkdir(exist_ok=True)
-    
+
     for file in files:
         try:
             # Validate file
             validate_file(file)
-            tmp_file = RAW_IMAGES_DIR/"tmp_file.bin"
+            tmp_file = RAW_IMAGES_DIR / "tmp_file.bin"
             if tmp_file.exists():
-                os.remove(tmp_file) 
+                os.remove(tmp_file)
 
             # Save file as tmp.bin
             with open(tmp_file, "wb") as f:
@@ -186,41 +176,39 @@ async def upload_multiple_files_advanced(
             file_location = RAW_IMAGES_DIR / unique_filename
             shutil.copy2(tmp_file, file_location)
 
-            probs = process_images_alt(image_path = file_location)
-
-
-
+            probs = process_images_alt(image_path=file_location)
 
             # print(f"probs {probs}")
 
-            uploaded_files.append({
-                "original_filename": file.filename,
-                "saved_filename": unique_filename,
-                "content_type": file.content_type,
-                "size": file_location.stat().st_size,
-                "data": formatted_date_time
-            })
+            uploaded_files.append(
+                {
+                    "original_filename": file.filename,
+                    "saved_filename": unique_filename,
+                    "content_type": file.content_type,
+                    "size": file_location.stat().st_size,
+                    "data": formatted_date_time,
+                }
+            )
             # add_delivery_set(hash_id=int(file_hash), image_file_id = unique_filename, datatime= formatted_date_time)
-            print(f"_______________________TEST_____________________________")
-            
-            tool_counter:dict = Counter(probs)
+            print("_______________________TEST_____________________________")
+
+            tool_counter: dict = Counter(probs)
             for i_tool in TOOL_CLASSES:
                 print(f"Counter of {i_tool}: {int(tool_counter.get(i_tool, 0))}")
 
             delivery_set = AeroToolDelivery(
                 image_file_id=unique_filename,
-                founded_screw_flat = int(tool_counter.get("screw_flat", 0)),
-                founded_screw_plus = int(tool_counter.get("screw_plus", 0)),
-                founded_offset_plus_screw = int(tool_counter.get("offset_plus_screw", 0)),
-                founded_kolovorot = int(tool_counter.get("kolovorot", 0)),
-                founded_safety_pliers = int(tool_counter.get("safety_pliers", 0)),
-                founded_pliers = int(tool_counter.get("pliers", 0)),
-                founded_shernitsa = int(tool_counter.get("shernitsa", 0)),
-                founded_adjustable_wrench = int(tool_counter.get("adjustable_wrench", 0)),
-                founded_can_opener = int(tool_counter.get("can_opener", 0)),
-                founded_open_end_wrench = int(tool_counter.get("open_end_wrench", 0)),
-                founded_side_cutters = int(tool_counter.get("side_cutters", 0)),
-
+                founded_screw_flat=int(tool_counter.get("screw_flat", 0)),
+                founded_screw_plus=int(tool_counter.get("screw_plus", 0)),
+                founded_offset_plus_screw=int(tool_counter.get("offset_plus_screw", 0)),
+                founded_kolovorot=int(tool_counter.get("kolovorot", 0)),
+                founded_safety_pliers=int(tool_counter.get("safety_pliers", 0)),
+                founded_pliers=int(tool_counter.get("pliers", 0)),
+                founded_shernitsa=int(tool_counter.get("shernitsa", 0)),
+                founded_adjustable_wrench=int(tool_counter.get("adjustable_wrench", 0)),
+                founded_can_opener=int(tool_counter.get("can_opener", 0)),
+                founded_open_end_wrench=int(tool_counter.get("open_end_wrench", 0)),
+                founded_side_cutters=int(tool_counter.get("side_cutters", 0)),
                 datatime=formatted_date_time,
             )
             db.add(delivery_set)  # добавляем в бд
@@ -232,15 +220,16 @@ async def upload_multiple_files_advanced(
         except Exception as e:
             # Handle other errors (disk full, permissions, etc.)
             raise HTTPException(
-                status_code=500,
-                detail=f"Failed to upload {file.filename}: {str(e)}"
+                status_code=500, detail=f"Failed to upload {file.filename}: {str(e)}"
             )
 
-    
-    return JSONResponse(content={
-        "message": f"Successfully uploaded {len(uploaded_files)} files",
-        "files": uploaded_files
-    })
+    return JSONResponse(
+        content={
+            "message": f"Successfully uploaded {len(uploaded_files)} files",
+            "files": uploaded_files,
+        }
+    )
+
 
 @app.post("/process-image")
 async def process_images(request: Request, images: list[UploadFile]):
@@ -251,12 +240,12 @@ async def process_images(request: Request, images: list[UploadFile]):
         img = np.frombuffer(img_contents, np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
         pil_img = Image.fromarray(img)
-        pil_img.save(WORK_DIR/f"raw_images/{image_name}")
+        pil_img.save(WORK_DIR / f"raw_images/{image_name}")
         if img is None:
             return {"error": f"Не удалось прочитать изображение {image_name}"}
 
         probs, annotated_image = pipeline.pipeline(pil_img, "yolo")
-        Image.fromarray(annotated_image).save(WORK_DIR/f"/handled_images/{image_name}")
+        Image.fromarray(annotated_image).save(WORK_DIR / f"/handled_images/{image_name}")
 
         image_names.append(image_name)
 
@@ -268,6 +257,7 @@ async def process_images(request: Request, images: list[UploadFile]):
             "images": image_names,
         },
     )
+
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
@@ -281,6 +271,7 @@ def get_get_json_report():
         return JSONResponse(status_code=404, content={"message": "База пуста"})
     return report
 
+
 @app.get("/get_all_uploaded_files")
 def get_get_json_report():
     # list_of_uploaded_files = db.query(AeroToolDelivery).all()
@@ -289,7 +280,6 @@ def get_get_json_report():
     if not list_of_uploaded_files:
         return JSONResponse(status_code=404, content={"message": "База пуста"})
     return list_of_uploaded_files
-
 
 
 @app.get("/api/get_state_for_delivery/{delivery_id}")
