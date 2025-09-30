@@ -261,6 +261,14 @@ async function refreshImageOfMain() {
     const img = document.createElement('img');
     img.src = `http://localhost:8000/results/${selectedValue}`;
     img.alt = `${selectedValue}`;
+
+    const leftBtn = document.createElement('button');
+    leftBtn.className = 'nav-btn left';
+    imgFrameContainer.appendChild(leftBtn);
+
+    const rightBtn = document.createElement('button');
+    rightBtn.className = 'nav-btn right';
+    imgFrameContainer.appendChild(rightBtn);
     
     // Optional: Add loading indicator
     img.style.display = 'none';
