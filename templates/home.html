@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 90px;
+            margin: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -239,16 +239,69 @@
         }
         .checkout-btn:active{ transform: translateY(1px); }
 
+        /* Контейнер */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 28px;
+        }
+
+        /* Скрытый чекбокс */
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        /* Дорожка переключателя */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .3s;
+          border-radius: 34px;
+        }
+
+        /* Круглый бегунок */
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 22px;
+          width: 22px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: .3s;
+          border-radius: 50%;
+        }
+
+        /* Когда включен */
+        .switch input:checked + .slider {
+          background-color: #6169FF;
+        }
+
+        /* Сдвигаем круг */
+        .switch input:checked + .slider:before {
+          transform: translateX(22px);
+        }
+
+
 
 </style>
 
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: 30px; left: 50px; display: flex; align-items: center; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; transform: translateX(-520px); margin-top: 30px; margin-bottom: 20px;">
         <img src="static/otvertka.png" style="width:48px; height:48px; border-radius:50px; border:1px #D0D0D0 solid;">
-        <span style="font-size:16px; font-weight:700; color:#141414; ">Распознаватель инструментов</span>
+        <span style="font-size:16px; font-weight:700; color:#141414;">Распознаватель инструментов</span>
     </div>
+
 
     <div class="selector_frame" style="
                     max-height: 80vh;
@@ -257,11 +310,7 @@
     ">
 
 
-    <label for="mySelect">Choose an option:</label>
       <!-- <div> -->
-    <select id="mySelect">
-
-    </select>
         <!-- <div> -->
     <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
 
@@ -269,7 +318,12 @@
 
     <div style="display: flex; gap: 60px; max-width: 100%; align-items: flex-start;">
 
+
 <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+
+    <select id="mySelect" style=" width: 300px ; margin-bottom: -16px;">
+
+    </select>
     <!-- Контейнер для изображения -->
     <div id="imgFrame"></div>
 
@@ -330,10 +384,15 @@
         </label>
         <input type="button" id="clearDbBtn" style="display: none;" onclick="clearDatabase()">
     </div>
+    <label class="switch">
+          <input type="checkbox" id="boxesEnable">
+          <span class="slider"></span>
+    </label>
+
 </div>
 
 <div>
-    <div class="cart-panel" id="cartPanel">
+    <div class="cart-panel" id="cartPanel" style="margin-top: 16px;">
 
 
         <div class="cart-list" style="display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 44px; align-items: center; row-gap: 26px; ">
@@ -463,6 +522,15 @@
               console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
             });
           });
+
+
+          document.getElementById("boxesEnable").addEventListener("change", function() {
+              if (this.checked) {
+                console.log("Отображаем с боксами");
+              } else {
+                console.log("Отображаем без боксов");
+              }
+            });
 
           minusButtons.forEach(btn => {
             btn.addEventListener("click", function() {
