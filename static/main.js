@@ -1,7 +1,20 @@
 
 
 const imgSelector = document.getElementById('currentImageFileSelector');
-const containerInputImages = document.getElementById('fileInput');
+const containerInputScreen2 = document.getElementById('fileInputScreen2');
+const containerInputScreen1 = document.getElementById('fileInputScreen1');
+
+const containerSwithShowRawImage = document.getElementById('switchShowRawImage');
+const containerClearDbAndStorage = document.getElementById('BtnCleanerDatabaseAndImageStorage');
+const containerLoading = document.getElementById('loading');
+const containerScreen2 = document.getElementById('screen2');
+const containerScreen1 = document.getElementById('screen1');
+
+
+
+let urlImagesStoreDir = "http://localhost:8000/results";
+
+
 
 function resetToolTable() {
   
@@ -38,6 +51,9 @@ async function editAeroTool(aeroToolId, aeroToolName, aeroToolAge) {
 
 async function setDetectState(aeroTool_id){
   console.log(`setDetectState ${aeroTool_id}`);
+  // containerLoading.classList.remove('.is_hidden');
+  // containerLoading.style.display = 'block';
+  // resultElement.textContent = '';
   const response = await fetch(`/api/set_detect_state/${aeroTool_id}`, {
       method: "POST",
       headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -53,6 +69,8 @@ async function setDetectState(aeroTool_id){
       const error = await response.json();
       console.log(error.message);
   }
+  // containerLoading.style.display = 'none';
+  // containerLoading.classList.add('.is_hidden');
   renewDeliveryTable();
 }
 
@@ -243,18 +261,42 @@ function genHtmlRawOption(fileName) {
 }
 
 async function refreshFileSelector() {
-  
+  containerLoading.classList.remove('hidden');
+  containerScreen2.classList.add('hidden');
   const response = await fetch("/api/get_all_uploaded_files", {
+
     method: "GET",
     
     headers: { "Accept": "application/json" }
   });
-  const countOfUploadedFiles = await response.json();
+  if (response.ok){
+    const countOfUploadedFiles = await response.json();
+    if (countOfUploadedFiles.message !== "base_is_empty"){
+      countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
+      containerScreen2.classList.remove('hidden');
+      containerLoading.classList.add('hidden');  
+    }
+    else{
+      containerScreen1.classList.remove('hidden');
+      containerScreen2.classList.add('hidden');
+      containerLoading.classList.add('hidden');  
+    }
+  }
+  else{
+    containerScreen1.classList.remove('hidden');
+    containerScreen2.classList.add('hidden');
+    containerLoading.classList.add('hidden');
+  }
 
-  countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
+
+  
 }
 
 function addMoveBtns(imgFrameContainer){
+
+  let currentIndex = imgSelector.selectedIndex;
+  let newIndex;
+  let maxIndex = imgSelector.length;
 
     function handleKeys() {
           if (pressedKeys.has('о') || pressedKeys.has('j')) {
@@ -269,33 +311,47 @@ function addMoveBtns(imgFrameContainer){
 
   const leftBtn = document.createElement('button');
   leftBtn.className = 'nav-btn left';
+
   imgFrameContainer.appendChild(leftBtn);
 
   leftBtn.addEventListener('click', async () => {
-    // imgSelector
-    console.log('Press left')
+    newIndex = Math.max(currentIndex - 1, 0);
+    console.log(`Press left ${newIndex}`)
+    if (newIndex !== 0) {
+      imgSelector.selectedIndex = newIndex;
+      console.log(`selectedIndex ${imgSelector.selectedIndex}`);
+      refreshImageOfMain();
+      refreshFrameDetectStatus();
+    }
+
+ 
   });
   
-
-
   const rightBtn = document.createElement('button');
   rightBtn.className = 'nav-btn right';
   imgFrameContainer.appendChild(rightBtn);
 
   rightBtn.addEventListener('click', async () => {
-    // imgSelector
-    console.log('Press Right')
+    console.log(`Press Right ${newIndex}`)
+    newIndex = Math.min(currentIndex + 1, maxIndex);
+    if (newIndex !== 0) {
+      imgSelector.selectedIndex = newIndex;
+      console.log(`selectedIndex ${imgSelector.selectedIndex}`);
+      refreshImageOfMain();
+      refreshFrameDetectStatus();
+    }
   });
 }
 
 async function refreshImageOfMain() {
   
   const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
+  
   const selectedValue = imgSelector.value;
   imgFrameContainer.innerHTML = '';
   if (selectedValue) {
     const img = document.createElement('img');
-    img.src = `http://localhost:8000/results/${selectedValue}`;
+    img.src = `${urlImagesStoreDir}/${selectedValue}`;
     img.alt = `${selectedValue}`;
 
     addMoveBtns(imgFrameContainer);
@@ -350,21 +406,27 @@ async function refreshFrameDetectStatus() {
 
 }
 
-document.getElementById("fileInput").addEventListener("change", async () => {
-  refreshFileSelector();
-});
+// document.getElementById("fileInput").addEventListener("change", async () => {
+//   refreshFileSelector();
+// });
 
 imgSelector.addEventListener('change', () => {
   refreshImageOfMain();
   refreshFrameDetectStatus();
 });
 
-containerInputImages.addEventListener('change', async () => {
+
+
+async function massUploadFiles(containerInputImages) {
+  containerScreen1.classList.add('hidden');
+  containerScreen2.classList.add('hidden');
+  containerLoading.classList.remove('hidden');
   const files = containerInputImages.files;
   if (!files) return;
 
   const formData = new FormData();
   for (let i = 0; i < files.length; i++) {
+    console.log(`Try to upload file ${files[i]}`)
       formData.append('files', files[i]);
   }
 
@@ -382,21 +444,98 @@ containerInputImages.addEventListener('change', async () => {
               ${result.message}`);
           refreshFileSelector();
           refreshImageOfMain();
+          containerScreen2.classList.remove('hidden');
+          containerLoading.classList.add('hidden');
       } else {
           const result = await response.json();
           console.error('Ошибка загрузки:', response.statusText);
           alert(`Ошибка при загрузке файлов. 
+          ${result.detail}`);
+          containerScreen1.classList.remove('hidden');
+          containerScreen2.classList.add('hidden');
+          containerLoading.classList.add('hidden');
+      }
+  } catch (error) {
+      console.error('Ошибка при отправке запроса:', error);
+      alert('Ошибка при отправке запроса на сервер.');
+      containerScreen1.classList.remove('hidden');
+      containerScreen2.classList.add('hidden');
+      containerLoading.classList.add('hidden');
+  }
+
+}
+
+containerInputScreen1.addEventListener('change', () => {
+  massUploadFiles(containerInputScreen1);
+});
+containerInputScreen2.addEventListener('change', () => {
+  massUploadFiles(containerInputScreen2);
+});
+
+containerSwithShowRawImage.addEventListener("change", function() {
+  if (this.checked) {
+    urlImagesStoreDir = "http://localhost:8000/results";
+    console.log("Отображаем с боксами");
+    refreshImageOfMain();
+  } else {
+    urlImagesStoreDir = "http://localhost:8000/raw_images";
+    console.log("Отображаем без боксов");
+    refreshImageOfMain();
+  }
+});
+
+
+containerClearDbAndStorage.addEventListener('click', async () => {
+  console.log("clean storage");
+  containerLoading.classList.remove('hidden');
+  containerScreen2.classList.add('hidden');
+
+  const formData = new FormData();
+  try {
+      const response = await fetch('/api/clear_database_and_storage/', {
+          method: 'POST',
+          body: formData
+      });
+
+      if (response.ok) {
+          const result = await response.json();
+          console.log('Файлы успешно удалены!', result.message);
+          alert(`Файлы успешно удалены! 
+              ${result.message}`);
+          refreshFileSelector();
+          refreshImageOfMain();
+      } else {
+          const result = await response.json();
+          console.error('Ошибка удаления файлов.', response.statusText);
+          alert(`Ошибка удаления файлов.
           ${result.detail}`);
       }
   } catch (error) {
       console.error('Ошибка при отправке запроса:', error);
       alert('Ошибка при отправке запроса на сервер.');
   }
-
+  
+  containerLoading.classList.add('hidden');
+  containerScreen1.classList.remove('hidden');
+  refreshFileSelector();
+  refreshImageOfMain();
 });
 
 
 
 
+
 refreshFileSelector();
-refreshImageOfMain();
+
+// if image
+containerLoading.classList.add('hidden');
+containerScreen1.classList.add('hidden');
+containerScreen2.classList.add('hidden');
+
+if (imgSelector.length !== 0) {
+  // containerScreen1.classList.add('hidden');
+  containerScreen2.classList.remove('hidden');
+}
+
+
+// refreshImageOfMain();
