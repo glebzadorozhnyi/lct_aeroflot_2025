@@ -21,6 +21,7 @@
     #imgFrame {
         position: relative;
         max-height: 520px;
+        max-width: 900px;
         overflow: hidden;
     }
 
@@ -34,7 +35,7 @@
 
     #imgFrame img {
         height: 520px;      /* фиксированная высота */
-        width: auto;         /* сохраняем пропорции */
+        max-width: 900px;
         display: block;
         margin: 0 auto;      /* по центру горизонтально */
         border-radius: 24px; /* скруглённые края */
@@ -276,7 +277,7 @@
     <span id="frameCounter" style="font-size: 16px; font-weight: 500; margin-top: 8px;">0 / 0</span>
 
     <!-- Контейнер для кнопок под изображением -->
-    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;">
+    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 10px;">
         <!-- Левая кнопка -->
         <label for="fileInput" style="
             cursor: pointer;
@@ -293,6 +294,23 @@
             Добавить изображение
         </label>
         <input type="file" multiple id="fileInput" accept="image/*" style="display: none;">
+        <!-- Средняя кнопка -->
+        <label for="jsonLoad" style="
+            cursor: pointer;
+            border: 1px solid #D0D0D0;
+            background: #FFF;
+            color: #141414;
+            padding: 17px 34px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            gap: 8px;
+        ">
+            <img src="static/download.png" alt="+" style="width: 22px; height: 22px;">
+            Скачать результат
+        </label>
+        <input type="button" id="jsonLoad" style="display: none;" onclick="jsonDownload()">
 
         <!-- Правая кнопка -->
         <label for="clearDbBtn" style="
@@ -307,7 +325,7 @@
             font-size: 16px;
             gap: 8px;
         ">
-            <img src="static/refresh.png" alt="+" style="width: 22px; height: 22px;">
+            <img src="static/refresh.png" alt="+" style="width: 20px; height: 20px;">
             Начать заново
         </label>
         <input type="button" id="clearDbBtn" style="display: none;" onclick="clearDatabase()">
@@ -362,6 +380,9 @@
     <script type="module" src="/static/main.js"></script>
     <script>
 
+        let pressedKeys = new Set();
+
+
         const resultImg = document.getElementById('resultImg');
         // import { refreshImageOfMain, refreshFileSelector } from '/static/main.js'
 
@@ -390,6 +411,25 @@
                     status_box.style.color = "red";
                 }
         }
+
+        document.addEventListener('keydown', (event) => {
+            pressedKeys.add(event.key.toLowerCase()); // добавляем в множество
+            handleKeys();
+        });
+
+        document.addEventListener('keyup', (event) => {
+            pressedKeys.delete(event.key.toLowerCase()); // убираем при отпускании
+        });
+
+        function handleKeys() {
+                if (pressedKeys.has('arrowleft')) || pressedKeys.has('о')) || pressedKeys.has('j')){
+                    show_picture(-1);
+                }
+
+                if (pressedKeys.has('arrowright')) || pressedKeys.has('л')) || pressedKeys.has('k')){
+                    show_picture(1);
+                }
+        {
 
 
         document.addEventListener("DOMContentLoaded", function() {
