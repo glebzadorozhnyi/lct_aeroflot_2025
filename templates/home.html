@@ -5,296 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🪛</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #F5F7FA;
-        }
-        input[type="file"] {
-            margin-bottom: 20px;
-        }
-
-    #imgFrame {
-        position: relative;
-        max-height: 520px;
-        max-width: 900px;
-        overflow: hidden;
-    }
-
-    #checkStatus {
-        margin-top: 20px;       /* Отступ сверху */
-        margin-left: 47px;      /* Отступ слева, можно менять под ширину таблицы */
-        font-size: 16px;
-        font-weight: 600;
-        text-align: left;
-    }
-
-    #imgFrame img {
-        height: 520px;      /* фиксированная высота */
-        max-width: 900px;
-        display: block;
-        margin: 0 auto;      /* по центру горизонтально */
-        border-radius: 24px; /* скруглённые края */
-    }
-
-    .nav-btn {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 50px;
-        background-color: rgba(0,0,0,0.2);
-        color: white;
-        border: none;
-        cursor: pointer;
-        opacity: 0; /* изначально невидима */
-        transition: opacity 0.3s;
-        font-size: 24px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #imgFrame:hover .nav-btn{
-        opacity: 1; /* появляется только при наведении на саму кнопку */
-    }
-
-    /* Левая кнопка */
-    .nav-btn.left {
-        left: 0;
-        border-radius: 24px 0 0 24px;
-        background-image: url('static/left.png');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 24px 24px;
-    }
-
-    /* Правая кнопка */
-    .nav-btn.right {
-        right: 0;
-        border-radius: 0 24px 24px 0;
-        background-image: url('static/right.png');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 24px 24px;
-    }
-        .cart-panel{
-          display: inline-flex;
-          padding: 32px 34px;
-          width: 510px;
-          align-items: flex-start;
-          gap: 64px;
-          font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-          display: flex;
-          flex-direction: column;
-          box-sizing: border-box;
-          border-radius: 24px;
-          border: 1px solid #EDEFF2;
-          background: #FFF;
-        }
-
-        .cart-title{
-          margin: 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #111827;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 6px;
-        }
-
-        .cart-list{
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          max-height: 75vh;
-          overflow: auto;
-          padding-right: 6px;
-        }
-
-        .cart-row{
-          display: flex;
-          align-items: center;   /* вертикальное центрирование */
-          gap: 5px;              /* расстояние между элементами */
-        }
-
-        .cart-thumb{
-          width: 48px;
-          height: 48px;
-          object-fit: cover;
-          border-radius: 6px;
-          background: #f3f4f6;
-        }
-
-        .cart-info{
-          width: 220px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          min-width: 0;
-        }
-
-        .cart-name{
-          width: 220px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #111827;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .cart-price{
-          font-size: 12px;
-          color: var(--muted);
-        }
-
-        .qty-control{
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          margin-left: 100px;
-        }
-
-        .qty-btn{
-          width: 28px;
-          height: 28px;
-          border-radius: 6px;
-          border: 1px solid var(--border);
-          background: white;
-          font-size: 16px;
-          line-height: 0;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          user-select: none;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .cart-row:hover .qty-btn {
-          opacity: 1;
-        }
-
-        .qty-btn:active{ transform: translateY(1px); }
-
-        .qty-input{
-          width: 14px;
-          text-align: center;
-          border: 1px solid var(--border);
-          border-radius: 6px;
-          padding: 4px;
-          font-size: 16px;
-        }
-        .qty-text {
-          display: inline-block;
-          min-width: 30px;
-          text-align: center;
-          padding: 2px 6px;
-          font-size: 16px;
-        }
-
-        .row-subtotal{
-          justify-self: end;
-          font-size: 13px;
-          font-weight: 600;
-          color: #111827;
-          margin-left: 6px;
-          min-width: 64px;
-          text-align: right;
-        }
-        .row-name {
-            width: 160px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            display: inline-block;       /* ширина под содержимое */
-            font-size: 16px;
-            font-family: Roboto, Arial, sans-serif;
-        }
-
-        /* footer */
-        .cart-footer{
-          border-top: 1px solid var(--border);
-          padding-top: 10px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .cart-total-label{ font-size: 13px; color: var(--muted); }
-        .cart-total-value{ font-size: 18px; font-weight: 700; color: #111827; }
-
-        .checkout-btn{
-          width: 100%;
-          padding: 8px 10px;
-          border-radius: 8px;
-          border: none;
-          background: var(--accent);
-          color: white;
-          font-weight: 700;
-          cursor: pointer;
-        }
-        .checkout-btn:active{ transform: translateY(1px); }
-
-        /* Контейнер */
-        .switch {
-          position: relative;
-          display: inline-block;
-          width: 50px;
-          height: 28px;
-        }
-
-        /* Скрытый чекбокс */
-        .switch input {
-          opacity: 0;
-          width: 0;
-          height: 0;
-        }
-
-        /* Дорожка переключателя */
-        .slider {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #ccc;
-          transition: .3s;
-          border-radius: 34px;
-        }
-
-        /* Круглый бегунок */
-        .slider:before {
-          position: absolute;
-          content: "";
-          height: 22px;
-          width: 22px;
-          left: 3px;
-          bottom: 3px;
-          background-color: white;
-          transition: .3s;
-          border-radius: 50%;
-        }
-
-        /* Когда включен */
-        .switch input:checked + .slider {
-          background-color: #6169FF;
-        }
-
-        /* Сдвигаем круг */
-        .switch input:checked + .slider:before {
-          transform: translateX(22px);
-        }
-
-
-
-</style>
-
-    </style>
 </head>
 <body>
     <div style="display: flex; align-items: center; gap: 10px; transform: translateX(-520px); margin-top: 30px; margin-bottom: 20px;">
@@ -302,7 +12,7 @@
         <span style="font-size:16px; font-weight:700; color:#141414;">Распознаватель инструментов</span>
     </div>
 
-<div id="screen1" class="hidden" style="
+    <div id="screen1" class="hidden" style="
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -339,7 +49,6 @@
 <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
     <!-- Контейнер для селектора текучещего изображения -->
     <select id="currentImageFileSelector">
-
     </select>
     <!-- Контейнер для изображения -->
     <div id="imgFrame"></div>
@@ -494,24 +203,14 @@
                 }
         }
 
-        document.addEventListener('keydown', (event) => {
-            pressedKeys.add(event.key.toLowerCase()); // добавляем в множество
-            handleKeys();
-        });
+        // document.addEventListener('keydown', (event) => {
+        //     pressedKeys.add(event.key.toLowerCase()); // добавляем в множество
+        //     // handleKeys();
+        // });
 
-        document.addEventListener('keyup', (event) => {
-            pressedKeys.delete(event.key.toLowerCase()); // убираем при отпускании
-        });
-
-        function handleKeys() {
-                if ( (pressedKeys.has('arrowleft')) || pressedKeys.has('о') || pressedKeys.has('j')) {
-                    show_picture(-1);
-                }
-
-                if ( (pressedKeys.has('arrowright')) || pressedKeys.has('л') || pressedKeys.has('k')) {
-                    show_picture(1);
-                }
-        }
+        // document.addEventListener('keyup', (event) => {
+        //     pressedKeys.delete(event.key.toLowerCase()); // убираем при отпускании
+        // });
 
 
         document.addEventListener("DOMContentLoaded", function() {
