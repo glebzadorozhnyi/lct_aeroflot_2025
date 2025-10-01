@@ -27,10 +27,13 @@ pipeline = Pipeline()
 WORK_DIR = Path(".workdir")
 HANDLED_IMAGES_DIR = Path(WORK_DIR / "handled_images")
 RAW_IMAGES_DIR = Path(WORK_DIR / "raw_images")
+BKP_IMAGES_DIR = Path(WORK_DIR / "bkp_images")
 
 HANDLED_IMAGES_DIR.mkdir(exist_ok=True)
 RAW_IMAGES_DIR.mkdir(exist_ok=True)
-
+BKP_IMAGES_DIR.mkdir(exist_ok=True)
+MAX_LIMIT_ONE_TIME_UPLOAD_FILES = 1000
+MAX_LIMIT_ONE_TIME_UPLOAD_FILES_HANDLE_EXEPTON = 200
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -138,17 +141,18 @@ def compute_file_hash(file_path, algorithm="md5"):
 
 @app.post("/upload-multiple-files-advanced/")
 async def upload_multiple_files_advanced(
-    files: list[UploadFile] = File(
+        files: list[UploadFile] = File(
         ...,
         description="Multiple files to upload (max 10 files)",
-        max_length=10,  # Limit number of files
+        max_length=MAX_LIMIT_ONE_TIME_UPLOAD_FILES,  # Limit number of files
     ),
 ):
     if len(files) == 0:
         raise HTTPException(status_code=400, detail="No files provided")
 
-    # if len(files) > 10:
-    # raise HTTPException(status_code=400, detail="Maximum 10 files allowed")
+    if len(files) > MAX_LIMIT_ONE_TIME_UPLOAD_FILES_HANDLE_EXEPTON:
+        raise HTTPException(status_code=400, detail="Maximum 10 files allowed")
+    #     return JSONResponse(status_code=400, content={"message": "Maximum 10 files allowed"})
 
     uploaded_files = []
     RAW_IMAGES_DIR.mkdir(exist_ok=True)
@@ -174,41 +178,46 @@ async def upload_multiple_files_advanced(
             unique_filename = f"{file_hash}_{file.filename}"
 
             file_location = RAW_IMAGES_DIR / unique_filename
-            shutil.copy2(tmp_file, file_location)
+            if file_location.exists():
+                print(f"Skip handling duplicat of: {file.filename}")
+            else:
 
-            probs = process_images_alt(image_path=file_location)
+                shutil.copy2(tmp_file, file_location)
+                shutil.copy2(tmp_file, BKP_IMAGES_DIR/unique_filename)
 
-            uploaded_files.append(
-                {
-                    "original_filename": file.filename,
-                    "saved_filename": unique_filename,
-                    "content_type": file.content_type,
-                    "size": file_location.stat().st_size,
-                    "data": formatted_date_time,
-                }
-            )
+                probs = process_images_alt(image_path=file_location)
 
-            tool_counter: dict = Counter(probs)
-            for i_tool in TOOL_CLASSES:
-                print(f"Counter of {i_tool}: {int(tool_counter.get(i_tool, 0))}")
+                uploaded_files.append(
+                    {
+                        "original_filename": file.filename,
+                        "saved_filename": unique_filename,
+                        "content_type": file.content_type,
+                        "size": file_location.stat().st_size,
+                        "data": formatted_date_time,
+                    }
+                )
 
-            delivery_set = AeroToolDelivery(
-                image_file_id=unique_filename,
-                founded_screw_flat=int(tool_counter.get("screw_flat", 0)),
-                founded_screw_plus=int(tool_counter.get("screw_plus", 0)),
-                founded_offset_plus_screw=int(tool_counter.get("offset_plus_screw", 0)),
-                founded_kolovorot=int(tool_counter.get("kolovorot", 0)),
-                founded_safety_pliers=int(tool_counter.get("safety_pliers", 0)),
-                founded_pliers=int(tool_counter.get("pliers", 0)),
-                founded_shernitsa=int(tool_counter.get("shernitsa", 0)),
-                founded_adjustable_wrench=int(tool_counter.get("adjustable_wrench", 0)),
-                founded_can_opener=int(tool_counter.get("can_opener", 0)),
-                founded_open_end_wrench=int(tool_counter.get("open_end_wrench", 0)),
-                founded_side_cutters=int(tool_counter.get("side_cutters", 0)),
-                datatime=formatted_date_time,
-            )
-            db.add(delivery_set)  # добавляем в бд
-            db.commit()
+                tool_counter: dict = Counter(probs)
+                for i_tool in TOOL_CLASSES:
+                    print(f"Counter of {i_tool}: {int(tool_counter.get(i_tool, 0))}")
+
+                delivery_set = AeroToolDelivery(
+                    image_file_id=unique_filename,
+                    founded_screw_flat=int(tool_counter.get("screw_flat", 0)),
+                    founded_screw_plus=int(tool_counter.get("screw_plus", 0)),
+                    founded_offset_plus_screw=int(tool_counter.get("offset_plus_screw", 0)),
+                    founded_kolovorot=int(tool_counter.get("kolovorot", 0)),
+                    founded_safety_pliers=int(tool_counter.get("safety_pliers", 0)),
+                    founded_pliers=int(tool_counter.get("pliers", 0)),
+                    founded_shernitsa=int(tool_counter.get("shernitsa", 0)),
+                    founded_adjustable_wrench=int(tool_counter.get("adjustable_wrench", 0)),
+                    founded_can_opener=int(tool_counter.get("can_opener", 0)),
+                    founded_open_end_wrench=int(tool_counter.get("open_end_wrench", 0)),
+                    founded_side_cutters=int(tool_counter.get("side_cutters", 0)),
+                    datatime=formatted_date_time,
+                )
+                db.add(delivery_set)  # добавляем в бд
+                db.commit()
 
         except HTTPException as e:
             # Re-raise validation errors
@@ -275,7 +284,6 @@ def get_get_json_report():
 
 @app.post("/api/clear_database_and_storage")
 def get_get_json_report():
-    print("__________________________-test")
     list_of_deliveries =  db.query(AeroToolDelivery).delete()
     print(list_of_deliveries)
     db.commit()
