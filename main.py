@@ -62,7 +62,7 @@ async def home(request: Request):
 
 UPLOAD_DIR = HANDLED_IMAGES_DIR
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_FILE_SIZE = 15 * 1024 * 1024  # 5MB
 
 
 def validate_file(file: UploadFile) -> None:

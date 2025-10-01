@@ -48,17 +48,31 @@
 
 
 <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-    <!-- Контейнер для селектора текучещего изображения -->
-    <select id="currentImageFileSelector">
-    </select>
     <!-- Контейнер для изображения -->
-    <div id="imgFrame"></div>
+    <div id="imgFrame" src=""></div>
 
-    <!-- Счётчик кадров -->
-    <span id="frameCounter" style="font-size: 16px; font-weight: 500; margin-top: 8px;">0 / 0</span>
+<div style="width: 90%; padding: 0 32px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+    <!-- Левая часть -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <select id="currentImageFileSelector"></select>
+        <img src="static/blue_arrow.png" style="width:16px; height:8px; margin-left: -28px;">
+    </div>
+
+    <!-- Правая часть -->
+    <span id="frameCounter" style="font-size: 16px; font-weight: 500;">0 / 0</span>
+</div>
+
+<div style="width: 88%; padding: 0 32px; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+    <label class="switch">
+        <input type="checkbox" id="switchShowRawImage" checked>
+        <span class="slider"></span>
+    </label>
+    <span style="font-size: 14px; color: #141414;">Отображать контуры распознанных инструментов</span>
+</div>
+
 
     <!-- Контейнер для кнопок под изображением -->
-    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 10px;">
+    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 12px;">
         <!-- Левая кнопка -->
         <label for="fileInputScreen2" style="
             cursor: pointer;
@@ -89,7 +103,7 @@
             gap: 8px;
         ">
             <img src="static/download.png" alt="+" style="width: 22px; height: 22px;">
-            <a href="/get_json_report" download>Скачать результат</a>
+            <a href="/get_json_report" download style="text-decoration: none; color: inherit;">Скачать результат</a>
             
         </label>
         <input type="button" id="jsonLoad" style="display: none;" onclick="jsonDownload()">
@@ -102,15 +116,12 @@
         <!-- <input type="button"  style="display: none;" onclick="()"> -->
         <!-- <input type="button" id="BtnCleanerDatabaseAndImageStorage" style="display: none;" onclick="clearDatabaseAndImageStorage()"> -->
     </div>
-    <label class="switch">
-          <input type="checkbox" id="switchShowRawImage" checked>
-          <span class="slider"></span>
-    </label>
+
 
 </div>
 
 <div>
-    <div class="cart-panel" id="cartPanel" style="margin-top: 16px;">
+    <div class="cart-panel" id="cartPanel">
 
 
         <div class="cart-list" style="display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 44px; align-items: center; row-gap: 26px; ">
@@ -138,7 +149,7 @@
         </div>
 
       </div>
-        <!-- <div id="checkStatus"> Статус  </div> -->
+    <div id="checkStatus"> Статус обновляется в highlightDifferences() </div>
 </div>
 
 </div>
