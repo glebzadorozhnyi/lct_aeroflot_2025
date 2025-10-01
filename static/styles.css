@@ -58,7 +58,7 @@ opacity: 1; /* появляется только при наведении на 
 .nav-btn.left {
 left: 0;
 border-radius: 24px 0 0 24px;
-background-image: url('static/left.png');
+background-image: url('left.png');
 background-repeat: no-repeat;
 background-position: center;
 background-size: 24px 24px;
@@ -68,7 +68,7 @@ background-size: 24px 24px;
 .nav-btn.right {
 right: 0;
 border-radius: 0 24px 24px 0;
-background-image: url('static/right.png');
+background-image: url('right.png');
 background-repeat: no-repeat;
 background-position: center;
 background-size: 24px 24px;
@@ -301,4 +301,24 @@ transform: translateX(22px);
 
 .hidden {
   display: none !important;
+}
+
+
+#BtnCleanerDatabaseAndImageStorage {
+  background: url(refresh.png) no-repeat;
+  cursor: pointer;
+  border: 1px solid #D0D0D0;
+  background: #FFF;
+  color: #141414;
+  padding: 17px 34px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  gap: 8px;
+}
+
+.is_hidden {
+  display: none;
+  /* display: none; */
 }

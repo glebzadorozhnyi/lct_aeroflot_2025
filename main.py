@@ -35,6 +35,7 @@ RAW_IMAGES_DIR.mkdir(exist_ok=True)
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/results", StaticFiles(directory=HANDLED_IMAGES_DIR), name="results")
+app.mount("/raw_images", StaticFiles(directory=RAW_IMAGES_DIR), name="raw_images")
 
 
 def get_all_proc_image_names():
@@ -259,7 +260,7 @@ async def upload_multiple_files_advanced(
 def get_get_json_report():
     report = db.query(AeroToolDelivery).all()
     if not report:
-        return JSONResponse(status_code=404, content={"message": "База пуста"})
+        return JSONResponse(status_code=200, content={"message": "base_is_empty"})
     return report
 
 
@@ -269,8 +270,21 @@ def get_get_json_report():
     list_of_uploaded_files = [user.image_file_id for user in db.query(AeroToolDelivery).all()]
     print(list_of_uploaded_files)
     if not list_of_uploaded_files:
-        return JSONResponse(status_code=404, content={"message": "База пуста"})
+        return JSONResponse(status_code=200, content={"message": "base_is_empty"})
     return list_of_uploaded_files
+
+@app.post("/api/clear_database_and_storage")
+def get_get_json_report():
+    print("__________________________-test")
+    list_of_deliveries =  db.query(AeroToolDelivery).delete()
+    print(list_of_deliveries)
+    db.commit()
+    db.close()
+    shutil.rmtree(HANDLED_IMAGES_DIR)
+    shutil.rmtree(RAW_IMAGES_DIR)
+    HANDLED_IMAGES_DIR.mkdir(exist_ok=True)
+    RAW_IMAGES_DIR.mkdir(exist_ok=True)
+    return JSONResponse(status_code=200, content={"message": "base_is_empty"})
 
 @app.get("/api/get_all_deliveries")
 def get_get_json_report():

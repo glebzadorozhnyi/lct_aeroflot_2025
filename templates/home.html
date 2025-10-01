@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+
     <div style="display: flex; align-items: center; gap: 10px; transform: translateX(-520px); margin-top: 30px; margin-bottom: 20px;">
         <img src="static/otvertka.png" style="width:48px; height:48px; border-radius:50px; border:1px #D0D0D0 solid;">
         <span style="font-size:16px; font-weight:700; color:#141414;">Распознаватель инструментов</span>
     </div>
-
+    <div id="loading">Loading...</div>
     <div id="screen1" class="hidden" style="
     display: flex;
     flex-direction: column;
@@ -26,7 +27,7 @@
     </div>
 
     <!-- Кнопка -->
-        <label for="fileInput2" style="
+        <label for="fileInputScreen1" style="
             cursor: pointer;
             background-color: #6169FF;
             color: white;
@@ -40,7 +41,7 @@
             <img src="static/plus.png" alt="+" style="width: 22px; height: 22px;">
             Загрузить изображения
         </label>
-        <input type="file" multiple id="fileInput2" accept="image/*" style="display: none;">
+        <input type="file" multiple id="fileInputScreen1" accept="image/*" style="display: none;">
 </div>
 
 <div id="screen2" class="" style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
@@ -59,7 +60,7 @@
     <!-- Контейнер для кнопок под изображением -->
     <div style="display: flex; justify-content: center; gap: 16px; margin-top: 10px;">
         <!-- Левая кнопка -->
-        <label for="fileInput" style="
+        <label for="fileInputScreen2" style="
             cursor: pointer;
             background-color: #6169FF;
             color: white;
@@ -73,7 +74,7 @@
             <img src="static/plus.png" alt="+" style="width: 22px; height: 22px;">
             Добавить изображение
         </label>
-        <input type="file" multiple id="fileInput" accept="image/*" style="display: none;">
+        <input type="file" multiple id="fileInputScreen2" accept="image/*" style="display: none;">
         <!-- Средняя кнопка -->
         <label for="jsonLoad" style="
             cursor: pointer;
@@ -88,30 +89,21 @@
             gap: 8px;
         ">
             <img src="static/download.png" alt="+" style="width: 22px; height: 22px;">
-            Скачать результат
+            <a href="/get_json_report" download>Скачать результат</a>
+            
         </label>
         <input type="button" id="jsonLoad" style="display: none;" onclick="jsonDownload()">
 
-        <!-- Правая кнопка -->
-        <label for="clearDbBtn" style="
-            cursor: pointer;
-            border: 1px solid #D0D0D0;
-            background: #FFF;
-            color: #141414;
-            padding: 17px 34px;
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            font-size: 16px;
-            gap: 8px;
-        ">
-            <img src="static/refresh.png" alt="+" style="width: 20px; height: 20px;">
-            Начать заново
+            
         </label>
-        <input type="button" id="clearDbBtn" style="display: none;" onclick="clearDatabase()">
+        <button   id="BtnCleanerDatabaseAndImageStorage"  > 
+          <img src="static/refresh.png" alt="+" style="width: 20px; height: 20px;">
+          Начать заново</button>
+        <!-- <input type="button"  style="display: none;" onclick="()"> -->
+        <!-- <input type="button" id="BtnCleanerDatabaseAndImageStorage" style="display: none;" onclick="clearDatabaseAndImageStorage()"> -->
     </div>
     <label class="switch">
-          <input type="checkbox" id="boxesEnable" checked>
+          <input type="checkbox" id="switchShowRawImage" checked>
           <span class="slider"></span>
     </label>
 
@@ -146,7 +138,7 @@
         </div>
 
       </div>
-        <div id="checkStatus"> Статус  </div>
+        <!-- <div id="checkStatus"> Статус  </div> -->
 </div>
 
 </div>
@@ -157,16 +149,16 @@
 
  </div>
     <div>
-        <button id="showAeroToolsTable">Показать актуальное состояние базы</button>
-        <button id="resetBtn">Сбросить</button>
+        <button id="showAeroToolsTable" class="hidden">Показать актуальное состояние базы</button>
+        <!-- <button id="resetBtn">Сбросить</button>
         <a href="/get_json_report">Линк на получение отчета в формате json</a>
-        <div id="tableContainer"></div>
+        <div id="tableContainer"></div> -->
     </div>
 
-<label class="switch">
+<!-- <label class="switch">
       <input type="checkbox" id="StartScreen">
       <span class="slider"></span>
-</label>
+</label> -->
     <script type="module" src="/static/main.js"></script>
 
     <script>
@@ -245,26 +237,19 @@
           });
 
 
-          document.getElementById("boxesEnable").addEventListener("change", function() {
-              if (this.checked) {
-                console.log("Отображаем с боксами");
-              } else {
-                console.log("Отображаем без боксов");
-              }
-            });
 
-          document.getElementById("StartScreen").addEventListener("change", function() {
-              const screen1 = document.getElementById("screen1");
-              const screen2 = document.getElementById("screen2");
-              if (this.checked) {
-                    screen1.classList.remove("hidden");
-                    screen2.classList.add("hidden");
+          // document.getElementById("StartScreen").addEventListener("change", function() {
+          //     const screen1 = document.getElementById("screen1");
+          //     const screen2 = document.getElementById("screen2");
+          //     if (this.checked) {
+          //           screen1.classList.remove("hidden");
+          //           screen2.classList.add("hidden");
 
-              } else {
-                    screen1.classList.add("hidden");
-                    screen2.classList.remove("hidden");
-              }
-            });
+          //     } else {
+          //           screen1.classList.add("hidden");
+          //           screen2.classList.remove("hidden");
+          //     }
+          //   });
 
           minusButtons.forEach(btn => {
             btn.addEventListener("click", function() {
