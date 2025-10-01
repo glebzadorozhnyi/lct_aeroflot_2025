@@ -25,7 +25,7 @@ docker-compose up -d --force-recreate --remove-orphans
 docker-compose logs -f
 #Optional step: attach console 
 docker-compose exec -it screwdriver bash
-docker exec -it b87440e6d810 bash
+docker exec -it fbdf6736f75f bash
 ```
 
 ```sh

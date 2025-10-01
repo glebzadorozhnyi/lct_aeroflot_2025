@@ -12,9 +12,10 @@ services:
       - ./configuration.nix:/etc/nixos/configuration.nix
     working_dir: /root/src_dir
 
+        # bash -c "cd /root/src_dir && pip install "fastapi[standard]"
     command: >
-        bash -c "cd /root/src_dir && pip install "fastapi[standard]"
-        && fastapi dev main.py --host 0.0.0.0 --port 8000"
+        bash -c " echo start;
+        fastapi dev main.py --host 0.0.0.0 --port 8000"
     environment:
        - NIX_PATH=nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
         # deploy:

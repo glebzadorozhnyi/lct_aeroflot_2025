@@ -12,8 +12,12 @@ const containerScreen1 = document.getElementById('screen1');
 
 
 
+
+
 let urlImagesStoreDir = "http://localhost:8000/results";
 
+
+console.log(`imgSelector before ${imgSelector.value}`);
 
 
 function resetToolTable() {
@@ -272,9 +276,10 @@ async function refreshFileSelector() {
   if (response.ok){
     const countOfUploadedFiles = await response.json();
     if (countOfUploadedFiles.message !== "base_is_empty"){
+      imgSelector.innerHTML = '';
       countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
       containerScreen2.classList.remove('hidden');
-      containerLoading.classList.add('hidden');  
+      containerLoading.classList.add('hidden');
     }
     else{
       containerScreen1.classList.remove('hidden');
@@ -294,9 +299,9 @@ async function refreshFileSelector() {
 
 function addMoveBtns(imgFrameContainer){
 
-  let currentIndex = imgSelector.selectedIndex;
+  // let currentIndex = imgSelector.selectedIndex;
   let newIndex;
-  let maxIndex = imgSelector.length;
+  let maxIndex = imgSelector.childElementCount;
 
     function handleKeys() {
           if (pressedKeys.has('о') || pressedKeys.has('j')) {
@@ -315,9 +320,9 @@ function addMoveBtns(imgFrameContainer){
   imgFrameContainer.appendChild(leftBtn);
 
   leftBtn.addEventListener('click', async () => {
-    newIndex = Math.max(currentIndex - 1, 0);
+    newIndex = Math.max(imgSelector.selectedIndex - 1, 0);
     console.log(`Press left ${newIndex}`)
-    if (newIndex !== 0) {
+    if (newIndex >= 0) {
       imgSelector.selectedIndex = newIndex;
       console.log(`selectedIndex ${imgSelector.selectedIndex}`);
       refreshImageOfMain();
@@ -332,9 +337,12 @@ function addMoveBtns(imgFrameContainer){
   imgFrameContainer.appendChild(rightBtn);
 
   rightBtn.addEventListener('click', async () => {
+
+    newIndex = Math.min(imgSelector.selectedIndex+1 , maxIndex);
     console.log(`Press Right ${newIndex}`)
-    newIndex = Math.min(currentIndex + 1, maxIndex);
-    if (newIndex !== 0) {
+    console.log(`imgSelector.selectedIndex ${imgSelector.selectedIndex}`)
+    console.log(`maxIndex ${maxIndex}`);
+    if (newIndex < maxIndex) {
       imgSelector.selectedIndex = newIndex;
       console.log(`selectedIndex ${imgSelector.selectedIndex}`);
       refreshImageOfMain();
@@ -347,7 +355,11 @@ async function refreshImageOfMain() {
   
   const imgFrameContainer = document.getElementById('imgFrame'); // Ваш селектор (например, <button>)
   
-  const selectedValue = imgSelector.value;
+  console.log(`select image ${imgSelector.value}`);
+
+  const  selectedValue = imgSelector.value;
+
+
   imgFrameContainer.innerHTML = '';
   if (selectedValue) {
     const img = document.createElement('img');
@@ -450,7 +462,7 @@ async function massUploadFiles(containerInputImages) {
           const result = await response.json();
           console.error('Ошибка загрузки:', response.statusText);
           alert(`Ошибка при загрузке файлов. 
-          ${result.detail}`);
+          ${result.detail}${result.msg}`);
           containerScreen1.classList.remove('hidden');
           containerScreen2.classList.add('hidden');
           containerLoading.classList.add('hidden');
@@ -458,6 +470,7 @@ async function massUploadFiles(containerInputImages) {
   } catch (error) {
       console.error('Ошибка при отправке запроса:', error);
       alert('Ошибка при отправке запроса на сервер.');
+      
       containerScreen1.classList.remove('hidden');
       containerScreen2.classList.add('hidden');
       containerLoading.classList.add('hidden');
@@ -531,11 +544,40 @@ refreshFileSelector();
 containerLoading.classList.add('hidden');
 containerScreen1.classList.add('hidden');
 containerScreen2.classList.add('hidden');
+refreshImageOfMain();
 
 if (imgSelector.length !== 0) {
   // containerScreen1.classList.add('hidden');
+  imgSelector.selectedIndex = 0;
+
   containerScreen2.classList.remove('hidden');
+
+  refreshImageOfMain();
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Your code to execute after the DOM is ready
+  console.log('DOM is fully loaded and parsed!');
+  // refreshImageOfMain();
+  // console.log(`test ${document.getElementById('currentImageFileSelector').value}`) ;
+});
 
-// refreshImageOfMain();
+
+// var imgSelector = document.getElementById('currentImageFileSelector');
+
+console.log(`imgSelector after ${imgSelector.value}`);
+
+if (document.readyState === 'complete') {
+  // Your code to execute when the page is fully loaded
+  console.log('Page is complete!');
+  refreshImageOfMain();
+  // console.log(`test ${document.getElementById('currentImageFileSelector').value}`) ;
+} else {
+  window.addEventListener('load', () => {
+    // Your code to execute when the page is fully loaded
+    console.log('Page is complete!');
+    refreshImageOfMain();
+    // console.log(`test ${document.getElementById('currentImageFileSelector').value}`) ;
+  });
+}
+
