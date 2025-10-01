@@ -237,6 +237,8 @@ function genHtmlRawOption(fileName) {
   option.setAttribute("value", fileName);
   option.text = filename_without_hash;
   option.className = "image-selector-option";
+  option.text = filename_without_hash;
+  option.className = "image-selector-option";
   return option;
 }
 
@@ -249,9 +251,41 @@ async function refreshFileSelector() {
   });
   const countOfUploadedFiles = await response.json();
 
-  const imgSelector = document.getElementById("currentImageFileSelector");
-
   countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
+}
+
+function addMoveBtns(imgFrameContainer){
+
+    function handleKeys() {
+          if (pressedKeys.has('о') || pressedKeys.has('j')) {
+              show_picture(-1);
+          }
+
+          if (pressedKeys.has('л') || pressedKeys.has('k')) {
+              show_picture(1);
+          }
+  }
+
+
+  const leftBtn = document.createElement('button');
+  leftBtn.className = 'nav-btn left';
+  imgFrameContainer.appendChild(leftBtn);
+
+  leftBtn.addEventListener('click', async () => {
+    // imgSelector
+    console.log('Press left')
+  });
+  
+
+
+  const rightBtn = document.createElement('button');
+  rightBtn.className = 'nav-btn right';
+  imgFrameContainer.appendChild(rightBtn);
+
+  rightBtn.addEventListener('click', async () => {
+    // imgSelector
+    console.log('Press Right')
+  });
 }
 
 async function refreshImageOfMain() {
@@ -264,13 +298,10 @@ async function refreshImageOfMain() {
     img.src = `http://localhost:8000/results/${selectedValue}`;
     img.alt = `${selectedValue}`;
 
-    const leftBtn = document.createElement('button');
-    leftBtn.className = 'nav-btn left';
-    imgFrameContainer.appendChild(leftBtn);
+    addMoveBtns(imgFrameContainer);
+    
 
-    const rightBtn = document.createElement('button');
-    rightBtn.className = 'nav-btn right';
-    imgFrameContainer.appendChild(rightBtn);
+
     
     // Optional: Add loading indicator
     img.style.display = 'none';
@@ -363,6 +394,9 @@ containerInputImages.addEventListener('change', async () => {
   }
 
 });
+
+
+
 
 refreshFileSelector();
 refreshImageOfMain();
