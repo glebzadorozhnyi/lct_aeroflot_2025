@@ -301,7 +301,39 @@
         <img src="static/otvertka.png" style="width:48px; height:48px; border-radius:50px; border:1px #D0D0D0 solid;">
         <span style="font-size:16px; font-weight:700; color:#141414;">Распознаватель инструментов</span>
     </div>
-    <div style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
+
+<div id="screen1" class="hidden" style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* расстояние между заголовком и кнопкой */
+    height: 50vh; /* занимает всю высоту окна */
+">
+    <!-- Заголовок -->
+    <div style="color: #141414; font-size: 40px; font-weight: 700; text-align: center;">
+        Выбери фотографии инструментов
+    </div>
+
+    <!-- Кнопка -->
+        <label for="fileInput2" style="
+            cursor: pointer;
+            background-color: #6169FF;
+            color: white;
+            padding: 17px 34px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            gap: 8px;
+        ">
+            <img src="static/plus.png" alt="+" style="width: 22px; height: 22px;">
+            Загрузить изображения
+        </label>
+        <input type="file" multiple id="fileInput2" accept="image/*" style="display: none;">
+</div>
+
+<div id="screen2" class="" style="display: flex; gap: 20px; max-width: 100%; align-items: flex-start;">
 
 
 <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
@@ -421,6 +453,11 @@
         <a href="/get_json_report">Линк на получение отчета в формате json</a>
         <div id="tableContainer"></div>
     </div>
+
+<label class="switch">
+      <input type="checkbox" id="StartScreen">
+      <span class="slider"></span>
+</label>
     <script type="module" src="/static/main.js"></script>
 
     <script>
@@ -514,6 +551,19 @@
                 console.log("Отображаем с боксами");
               } else {
                 console.log("Отображаем без боксов");
+              }
+            });
+
+          document.getElementById("StartScreen").addEventListener("change", function() {
+              const screen1 = document.getElementById("screen1");
+              const screen2 = document.getElementById("screen2");
+              if (this.checked) {
+                    screen1.classList.remove("hidden");
+                    screen2.classList.add("hidden");
+
+              } else {
+                    screen1.classList.add("hidden");
+                    screen2.classList.remove("hidden");
               }
             });
 

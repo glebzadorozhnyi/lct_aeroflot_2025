@@ -194,3 +194,7 @@ img {
   font-weight: bold;
   text-decoration: underline;
 }
+
+.hidden {
+  display: none !important;
+}
