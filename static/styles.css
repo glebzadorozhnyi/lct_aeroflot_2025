@@ -177,3 +177,20 @@ img {
   cursor: pointer;
 }
 .checkout-btn:active{ transform: translateY(1px); } */ 
+
+
+#currentImageFileSelector{
+  align-items: center;
+  max-height: 80vh;
+  border-radius:50px; border:1px #6169FF solid;
+  padding: 8px 10px;
+  width: 300px ; 
+  margin-bottom: -16px;
+}
+
+.image-selector-option:checked  {
+  border:1px #6169FF solid;
+  background-color: #ffffff;
+  font-weight: bold;
+  text-decoration: underline;
+}

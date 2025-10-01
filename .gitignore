@@ -2,4 +2,4 @@
 .workdir
 nix_store
 __pycache__
-documentation-template
+.bazel_cazhe
