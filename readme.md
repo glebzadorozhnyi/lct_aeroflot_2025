@@ -43,4 +43,21 @@ sudo apt-get install sqlitebrowser
 ```sh
 sqlitebrowser .workdir/sql_app.db
 
-````
+```
+
+
+
+
+## Deploy 'screwdriver' as bazel label
+Установите bazel, например как бинрный файл ( по https://bazel.build/install/ubuntu#binary-installer)
+```sh
+pushd /tmp;
+wget https://github.com/bazelbuild/bazel/releases/download/8.4.2rc2/bazel_8.4.2rc2-linux-x86_64.deb
+sudo apt install ./bazel_8.4.2rc2-linux-x86_64.deb 
+popd;
+```
+Очистка
+```sh 
+rm -r "$(bazel info repository_cache)"
+ bazel clean --async --expunge
+```

@@ -1,6 +1,6 @@
 
 
-const imgSelector = document.getElementById('mySelect');
+const imgSelector = document.getElementById('currentImageFileSelector');
 const containerInputImages = document.getElementById('fileInput');
 
 function resetToolTable() {
@@ -233,8 +233,10 @@ document.getElementById("showAeroToolsTable").addEventListener("click", async ()
 function genHtmlRawOption(fileName) {
   
   const option = document.createElement("option");
+  const filename_without_hash = fileName.slice(33);
   option.setAttribute("value", fileName);
-  option.text = fileName;
+  option.text = filename_without_hash;
+  option.className = "image-selector-option";
   return option;
 }
 
@@ -247,7 +249,7 @@ async function refreshFileSelector() {
   });
   const countOfUploadedFiles = await response.json();
 
-  const imgSelector = document.getElementById("mySelect");
+  const imgSelector = document.getElementById("currentImageFileSelector");
 
   countOfUploadedFiles.forEach(fileName => imgSelector.append(genHtmlRawOption(fileName)));
 }
