@@ -58,7 +58,7 @@
         align-items: center;
     }
 
-    .nav-btn:hover {
+    #imgFrame:hover .nav-btn{
         opacity: 1; /* появляется только при наведении на саму кнопку */
     }
 
@@ -378,6 +378,7 @@
         <div id="tableContainer"></div>
     </div>
     <script type="module" src="/static/main.js"></script>
+
     <script>
 
         let pressedKeys = new Set();
@@ -422,14 +423,14 @@
         });
 
         function handleKeys() {
-                if (pressedKeys.has('arrowleft')) || pressedKeys.has('о')) || pressedKeys.has('j')){
+                if ( (pressedKeys.has('arrowleft')) || pressedKeys.has('о') || pressedKeys.has('j')) {
                     show_picture(-1);
                 }
 
-                if (pressedKeys.has('arrowright')) || pressedKeys.has('л')) || pressedKeys.has('k')){
+                if ( (pressedKeys.has('arrowright')) || pressedKeys.has('л') || pressedKeys.has('k')) {
                     show_picture(1);
                 }
-        {
+        }
 
 
         document.addEventListener("DOMContentLoaded", function() {
