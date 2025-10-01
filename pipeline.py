@@ -17,7 +17,7 @@ class Pipeline:
         self.model = Pipeline.get_model(model_path)
 
     def process_by_yolo(self, img: Image.Image):
-        results = self.model.predict(img, verbose=False, conf=0.5, device="0", iou=0.1)
+        results = self.model.predict(img, verbose=False, conf=0.5, iou=0.1)
         return results
 
     def process(self, img: Image.Image):
