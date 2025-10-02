@@ -24,6 +24,22 @@ function genHtmlRawOption(fileName) {
   return option;
 }
 
+function showToast(message) {
+    const container = document.getElementById("toast-container");
+
+    // Создаём новый тост
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+
+    container.appendChild(toast);
+
+    // Удаляем через 4 секунды
+    setTimeout(() => {
+      toast.remove();
+    }, 4000);
+  }
+
 async function refreshFileSelector() {
   containerLoading.classList.remove("hidden");
   containerScreen2.classList.add("hidden");
