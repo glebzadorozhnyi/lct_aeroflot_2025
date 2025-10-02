@@ -17,7 +17,7 @@ from fastapi.templating import Jinja2Templates
 from PIL import Image
 
 from pipeline import Pipeline
-from constants import TOOL_CLASSES
+from constants import TOOL_CLASSES, TOOL_CLASSES_RU
 from db import AeroToolDelivery, db
 
 templates = Jinja2Templates(directory="templates")
@@ -47,20 +47,9 @@ def get_all_proc_image_names():
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    cart_items = [
-        {"id": 1, "name": "Плоская отвёртка"},
-        {"id": 2, "name": "Крестовая отвёртка"},
-        {"id": 3, "name": "Отвёртка крест"},
-        {"id": 4, "name": "Коловорот"},
-        {"id": 5, "name": "Пассатижи контр"},
-        {"id": 6, "name": "Пассатижи"},
-        {"id": 7, "name": "Шерница"},
-        {"id": 8, "name": "Разводной ключ"},
-        {"id": 9, "name": "Открывалка"},
-        {"id": 10, "name": "Ключ рожковый"},
-        {"id": 11, "name": "Бокорезы"},
-    ]
-    return templates.TemplateResponse("home.html", {"request": request, "cart_items": cart_items})
+    return templates.TemplateResponse(
+        "home.html", {"request": request, "cart_items": TOOL_CLASSES_RU}
+    )
 
 
 UPLOAD_DIR = HANDLED_IMAGES_DIR
@@ -141,7 +130,7 @@ def compute_file_hash(file_path, algorithm="md5"):
 
 @app.post("/upload-multiple-files-advanced/")
 async def upload_multiple_files_advanced(
-        files: list[UploadFile] = File(
+    files: list[UploadFile] = File(
         ...,
         description="Multiple files to upload (max 10 files)",
         max_length=MAX_LIMIT_ONE_TIME_UPLOAD_FILES,  # Limit number of files
@@ -181,9 +170,8 @@ async def upload_multiple_files_advanced(
             if file_location.exists():
                 print(f"Skip handling duplicat of: {file.filename}")
             else:
-
                 shutil.copy2(tmp_file, file_location)
-                shutil.copy2(tmp_file, BKP_IMAGES_DIR/unique_filename)
+                shutil.copy2(tmp_file, BKP_IMAGES_DIR / unique_filename)
 
                 probs = process_images_alt(image_path=file_location)
 
@@ -264,7 +252,6 @@ async def upload_multiple_files_advanced(
 #     )
 
 
-
 @app.get("/get_json_report")
 def get_get_json_report():
     report = db.query(AeroToolDelivery).all()
@@ -282,9 +269,10 @@ def get_get_json_report():
         return JSONResponse(status_code=200, content={"message": "base_is_empty"})
     return list_of_uploaded_files
 
+
 @app.post("/api/clear_database_and_storage")
 def get_get_json_report():
-    list_of_deliveries =  db.query(AeroToolDelivery).delete()
+    list_of_deliveries = db.query(AeroToolDelivery).delete()
     print(list_of_deliveries)
     db.commit()
     db.close()
@@ -294,9 +282,10 @@ def get_get_json_report():
     RAW_IMAGES_DIR.mkdir(exist_ok=True)
     return JSONResponse(status_code=200, content={"message": "base_is_empty"})
 
+
 @app.get("/api/get_all_deliveries")
 def get_get_json_report():
-    list_of_deliveries =  db.query(AeroToolDelivery).all()
+    list_of_deliveries = db.query(AeroToolDelivery).all()
     # print(list_of_uploaded_files)
     if not list_of_deliveries:
         return JSONResponse(status_code=404, content={"message": "База пуста"})
@@ -310,11 +299,18 @@ def get_state_for_delivery_1(delivery_id: int):
         return JSONResponse(status_code=404, content={"message": "База пуста"})
     return report
 
+
 @app.get("/api/get_state_for_delivery_by_name/{delivery_id_file_name}")
 def get_state_for_delivery_1(delivery_id_file_name):
-    report = db.query(AeroToolDelivery).filter(AeroToolDelivery.image_file_id == delivery_id_file_name).first()
+    report = (
+        db.query(AeroToolDelivery)
+        .filter(AeroToolDelivery.image_file_id == delivery_id_file_name)
+        .first()
+    )
     if not report:
-        return JSONResponse(status_code=404, content={"message": "\"delivery_id_file_name\" not found"})
+        return JSONResponse(
+            status_code=404, content={"message": '"delivery_id_file_name" not found'}
+        )
     return report
 
 
