@@ -1,63 +1,50 @@
-## Requirements
-
+# Requirements
+## Software
 - ubuntu 22/24
 - docker
 - docker-compose-plugin(recommended)
-- Nvidia GPU
-
-## Deploy 'screwdriver' as docker-compose app
-### Build image (can be skipped)
+- Nvidia GPU [optional]
+## Hardware
+- 2 GB RAM
+- 2 CPU
+- 100 GB SSH/HDD
+- CUDA GPU Compute Capability [optional]
+#  Первый запуск
+## Сборка образа 'screwdriver'
 ```shell
 docker-compose build
 ```
-### Run app
-- [optional] Clean last deploy
+##  Запуск web-приложения
 ```sh
-docker container stop screwdriver 
-docker-compose stop && docker-compose rm
-# or 
-ocker container rm screwdriver
-```
-Deploy web app
-```shell
 docker-compose up -d --force-recreate --remove-orphans 
-#Optional step: check logs
 docker-compose logs -f
-#Optional step: attach console 
-docker-compose exec -it screwdriver bash
-docker exec -it fbdf6736f75f bash
 ```
-
-```sh
-npx -y @diplodoc/cli@next -i ./docs -o ./.workdir/docs --config .yfw  --output-format html 
-```
-
-
-# Просмотр базы данных
+Далее зайти в UI: http://0.0.0.0:8000 через браузер.
+## Просмотр базы данных
 Установка  sqlitebrowser для просмотрп db
 ```sh
 sudo apt-get install sqlitebrowser
 ```
-
 Просмотр данных
 ```sh
 sqlitebrowser .workdir/sql_app.db
 
 ```
-
-
-
-
-## Deploy 'screwdriver' as bazel label
-Установите bazel, например как бинрный файл ( по https://bazel.build/install/ubuntu#binary-installer)
+## Просмотр базы данных
+Установка  sqlitebrowser для просмотрп db
 ```sh
-pushd /tmp;
-wget https://github.com/bazelbuild/bazel/releases/download/8.4.2rc2/bazel_8.4.2rc2-linux-x86_64.deb
-sudo apt install ./bazel_8.4.2rc2-linux-x86_64.deb 
-popd;
+sudo apt-get install sqlitebrowser
 ```
-Очистка
+Просмотр данных
+```sh
+sqlitebrowser .workdir/sql_app.db
+```
+## Описание REST API интерфейса
+http://0.0.0.0:8000/docs
+
+## Перезапуск
 ```sh 
-rm -r "$(bazel info repository_cache)"
- bazel clean --async --expunge
+make rerun
 ```
+# Demo 🪛
+http://main.screwdriver-and-co.ru/
