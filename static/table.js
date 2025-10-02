@@ -103,22 +103,10 @@ document.addEventListener("DOMContentLoaded", function () {
       input.dispatchEvent(new Event("change"));
 
       console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+      highlightDifferences();
     });
   });
-  highlightDifferences();
 
-  // document.getElementById("StartScreen").addEventListener("change", function() {
-  //     const screen1 = document.getElementById("screen1");
-  //     const screen2 = document.getElementById("screen2");
-  //     if (this.checked) {
-  //           screen1.classList.remove("hidden");
-  //           screen2.classList.add("hidden");
-
-  //     } else {
-  //           screen1.classList.add("hidden");
-  //           screen2.classList.remove("hidden");
-  //     }
-  //   });
 
   minusButtons.forEach((btn) => {
     btn.addEventListener("click", function () {
@@ -141,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
       input.dispatchEvent(new Event("change"));
 
       console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+        highlightDifferences();
     });
   });
-  highlightDifferences();
 });
