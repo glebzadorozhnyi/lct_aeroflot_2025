@@ -166,6 +166,12 @@
     </div>
     <script src="/static/main.js"></script>
     <script src="/static/table.js"></script>
+    <script>
+        setTimeout(() => {
+            selector = document.getElementById("currentImageFileSelector");
+            selector.dispatchEvent(new Event('change'));
+        }, 100);
+    </script>
 </body>
 
 </html>
