@@ -1,6 +1,7 @@
 let pressedKeys = new Set();
 
 const resultImg = document.getElementById("resultImg");
+const image_window = document.getElementById('imageContainer');
 // import { refreshImageOfMain, refreshFileSelector } from '/static/main.js'
 
 function highlightDifferences() {
@@ -29,14 +30,20 @@ function highlightDifferences() {
   }
 }
 
-// document.addEventListener('keydown', (event) => {
-//     pressedKeys.add(event.key.toLowerCase()); // добавляем в множество
-//     // handleKeys();
-// });
+image_window.addEventListener('load', () => {
+        setTimeout(() => {
+        highlightDifferences()
+    }, 100);
+});
 
-// document.addEventListener('keyup', (event) => {
-//     pressedKeys.delete(event.key.toLowerCase()); // убираем при отпускании
-// });
+  document.addEventListener("keydown", function(event) {
+    if ((event.key === "ArrowRight") || (event.key === "ArrowLeft") || (event.key === "ArrowUp") || (event.key === "ArrowDown")) {
+        const selector = document.getElementById("currentImageFileSelector");
+        if (selector) {
+            selector.focus();
+        }
+    }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   // Находим все кнопки "+" в корзине
