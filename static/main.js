@@ -21,8 +21,6 @@ function genHtmlRawOption(fileName) {
   option.setAttribute("value", fileName);
   option.text = filename_without_hash;
   option.className = "image-selector-option";
-  option.text = filename_without_hash;
-  option.className = "image-selector-option";
   return option;
 }
 
@@ -55,49 +53,26 @@ async function refreshFileSelector() {
   }
 }
 
-function addMoveBtns(imgFrameContainer) {
-  // let currentIndex = imgSelector.selectedIndex;
-  let newIndex;
-  let maxIndex = imgSelector.childElementCount;
+function addMoveBtns() {
+  const imgFrameContainer = document.getElementById("imgFrame");
+  const navButtons = imgFrameContainer.querySelectorAll("button");
+  let leftNavButton = navButtons[0];
+  let rightNavButton = navButtons[1];
 
-  function handleKeys() {
-    if (pressedKeys.has("о") || pressedKeys.has("j")) {
-      show_picture(-1);
-    }
-
-    if (pressedKeys.has("л") || pressedKeys.has("k")) {
-      show_picture(1);
-    }
-  }
-
-  const leftBtn = document.createElement("button");
-  leftBtn.className = "nav-btn left";
-
-  imgFrameContainer.appendChild(leftBtn);
-
-  leftBtn.addEventListener("click", async () => {
-    newIndex = Math.max(imgSelector.selectedIndex - 1, 0);
-    console.log(`Press left ${newIndex}`);
+  leftNavButton.addEventListener("click", async () => {
+    let newIndex = Math.max(imgSelector.selectedIndex - 1, 0);
     if (newIndex >= 0) {
       imgSelector.selectedIndex = newIndex;
-      console.log(`selectedIndex ${imgSelector.selectedIndex}`);
       refreshImageOfMain();
       refreshFrameDetectStatus();
     }
   });
 
-  const rightBtn = document.createElement("button");
-  rightBtn.className = "nav-btn right";
-  imgFrameContainer.appendChild(rightBtn);
-
-  rightBtn.addEventListener("click", async () => {
-    newIndex = Math.min(imgSelector.selectedIndex + 1, maxIndex);
-    console.log(`Press Right ${newIndex}`);
-    console.log(`imgSelector.selectedIndex ${imgSelector.selectedIndex}`);
-    console.log(`maxIndex ${maxIndex}`);
+  rightNavButton.addEventListener("click", async () => {
+    let maxIndex = imgSelector.childElementCount;
+    let newIndex = Math.min(imgSelector.selectedIndex + 1, maxIndex);
     if (newIndex < maxIndex) {
       imgSelector.selectedIndex = newIndex;
-      console.log(`selectedIndex ${imgSelector.selectedIndex}`);
       refreshImageOfMain();
       refreshFrameDetectStatus();
     }
@@ -105,39 +80,10 @@ function addMoveBtns(imgFrameContainer) {
 }
 
 async function refreshImageOfMain() {
-  const imgFrameContainer = document.getElementById("imgFrame"); // Ваш селектор (например, <button>)
-
-  console.log(`select image ${imgSelector.value}`);
-
+  var img = document.getElementById("imageContainer");
   const selectedValue = imgSelector.value;
-
-  imgFrameContainer.innerHTML = "";
-  if (selectedValue) {
-    const img = document.createElement("img");
-    img.src = `${urlImagesStoreDir}/${selectedValue}`;
-    img.alt = `${selectedValue}`;
-
-    addMoveBtns(imgFrameContainer);
-
-    // Optional: Add loading indicator
-    img.style.display = "none";
-    imgFrameContainer.appendChild(img);
-
-    // Handle image load
-    img.onload = () => {
-      img.style.display = "block";
-    };
-
-    // Handle load errors
-    img.onerror = () => {
-      imgFrameContainer.innerHTML =
-        '<p style="color: red;">Failed to load image</p>';
-    };
-  } else {
-    // Show placeholder when no selection
-    imgFrameContainer.innerHTML =
-      '<span class="placeholder">Select an image from the dropdown</span>';
-  }
+  img.src = `${urlImagesStoreDir}/${selectedValue}`;
+  img.alt = `${selectedValue}`;
 }
 
 async function refreshFrameDetectStatus() {
@@ -152,7 +98,7 @@ async function refreshFrameDetectStatus() {
     }
   );
   // если запрос прошел нормально
-  if (response.ok === true) {
+  if (response.ok) {
     // получаем данные
     const deliveryItemData = await response.json();
     document.getElementById("table_12").textContent =
@@ -180,10 +126,6 @@ async function refreshFrameDetectStatus() {
     console.log(deliveryItemData);
   }
 }
-
-// document.getElementById("fileInput").addEventListener("change", async () => {
-//   refreshFileSelector();
-// });
 
 imgSelector.addEventListener("change", () => {
   refreshImageOfMain();
@@ -293,6 +235,7 @@ containerClearDbAndStorage.addEventListener("click", async () => {
 });
 
 refreshFileSelector();
+addMoveBtns();
 
 // if image
 containerLoading.classList.add("hidden");
