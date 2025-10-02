@@ -1,8 +1,15 @@
 let pressedKeys = new Set();
 
 const resultImg = document.getElementById("resultImg");
-const image_window = document.getElementById('imageContainer');
+const image_window = document.getElementById("imageContainer");
 // import { refreshImageOfMain, refreshFileSelector } from '/static/main.js'
+
+function updateFrameCounter() {
+  frameCounter = document.getElementById("frameCounter");
+  console.log(imgSelector.childElementCount, imgSelector.selectedIndex);
+  frameCounter.innerText =
+    imgSelector.selectedIndex + 1 + "/" + imgSelector.childElementCount;
+}
 
 function highlightDifferences() {
   const status_box = document.getElementById(`checkStatus`);
@@ -30,19 +37,25 @@ function highlightDifferences() {
   }
 }
 
-image_window.addEventListener('load', () => {
-        setTimeout(() => {
-        highlightDifferences()
-    }, 100);
+image_window.addEventListener("load", () => {
+  setTimeout(() => {
+    highlightDifferences();
+  }, 100);
+  updateFrameCounter();
 });
 
-  document.addEventListener("keydown", function(event) {
-    if ((event.key === "ArrowRight") || (event.key === "ArrowLeft") || (event.key === "ArrowUp") || (event.key === "ArrowDown")) {
-        const selector = document.getElementById("currentImageFileSelector");
-        if (selector) {
-            selector.focus();
-        }
+document.addEventListener("keydown", function (event) {
+  if (
+    event.key === "ArrowRight" ||
+    event.key === "ArrowLeft" ||
+    event.key === "ArrowUp" ||
+    event.key === "ArrowDown"
+  ) {
+    const selector = document.getElementById("currentImageFileSelector");
+    if (selector) {
+      selector.focus();
     }
+  }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
