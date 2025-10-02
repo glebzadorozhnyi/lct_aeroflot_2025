@@ -44,8 +44,7 @@ async function refreshFileSelector() {
       let length = countOfUploadedFiles.length;
       selector = document.getElementById("currentImageFileSelector");
       selector.selectedIndex = length - 1;
-      selector.dispatchEvent(new Event('change'));
-
+      selector.dispatchEvent(new Event("change"));
     } else {
       containerScreen1.classList.remove("hidden");
       containerScreen2.classList.add("hidden");
@@ -65,12 +64,14 @@ function addMoveBtns() {
   let rightNavButton = navButtons[1];
 
   leftNavButton.addEventListener("click", async () => {
-    let newIndex = Math.max(imgSelector.selectedIndex - 1, 0);
+    let newIndex = imgSelector.selectedIndex - 1;
     if (newIndex >= 0) {
       imgSelector.selectedIndex = newIndex;
-      refreshImageOfMain();
-      refreshFrameDetectStatus();
+    } else {
+      imgSelector.selectedIndex = imgSelector.childElementCount - 1;
     }
+    refreshImageOfMain();
+    refreshFrameDetectStatus();
   });
 
   rightNavButton.addEventListener("click", async () => {
@@ -78,9 +79,11 @@ function addMoveBtns() {
     let newIndex = Math.min(imgSelector.selectedIndex + 1, maxIndex);
     if (newIndex < maxIndex) {
       imgSelector.selectedIndex = newIndex;
-      refreshImageOfMain();
-      refreshFrameDetectStatus();
+    } else {
+      imgSelector.selectedIndex = 0;
     }
+    refreshImageOfMain();
+    refreshFrameDetectStatus();
   });
 }
 
