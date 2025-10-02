@@ -46,15 +46,33 @@ image_window.addEventListener("load", () => {
 
 document.addEventListener("keydown", function (event) {
   if (
-    event.key === "ArrowRight" ||
     event.key === "ArrowLeft" ||
-    event.key === "ArrowUp" ||
-    event.key === "ArrowDown"
+    event.key === "ArrowUp"
   ) {
-    const selector = document.getElementById("currentImageFileSelector");
-    if (selector) {
-      selector.focus();
+  const imgSelector = document.getElementById("currentImageFileSelector");
+    let newIndex = imgSelector.selectedIndex - 1;
+    if (newIndex >= 0) {
+      imgSelector.selectedIndex = newIndex;
+    } else {
+      imgSelector.selectedIndex = imgSelector.childElementCount - 1;
     }
+    refreshImageOfMain();
+    refreshFrameDetectStatus();
+  }
+  else if (
+    event.key === "ArrowRight" ||
+    event.key === "ArrowDown"
+  )
+  {
+    let maxIndex = imgSelector.childElementCount;
+    let newIndex = Math.min(imgSelector.selectedIndex + 1, maxIndex);
+    if (newIndex < maxIndex) {
+      imgSelector.selectedIndex = newIndex;
+    } else {
+      imgSelector.selectedIndex = 0;
+    }
+    refreshImageOfMain();
+    refreshFrameDetectStatus();
   }
 });
 
