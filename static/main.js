@@ -9,9 +9,23 @@ const containerClearDbAndStorage = document.getElementById('BtnCleanerDatabaseAn
 const containerLoading = document.getElementById('loading');
 const containerScreen2 = document.getElementById('screen2');
 const containerScreen1 = document.getElementById('screen1');
+const containerCartListItemsPanel = document.getElementById('cartListItemsPanel');
 
 
 
+const cart_items = [
+  {"id": 1, "name": "Плоская отвёртка"},
+  {"id": 2, "name": "Крестовая отвёртка"},
+  {"id": 3, "name": "Отвёртка крест"},
+  {"id": 4, "name": "Коловорот"},
+  {"id": 5, "name": "Пассатижи контр"},
+  {"id": 6, "name": "Пассатижи"},
+  {"id": 7, "name": "Шерница"},
+  {"id": 8, "name": "Разводной ключ"},
+  {"id": 9, "name": "Открывалка"},
+  {"id": 10, "name": "Ключ рожковый"},
+  {"id": 11, "name": "Бокорезы"},
+]
 
 
 let urlImagesStoreDir = "http://localhost:8000/results";
@@ -536,8 +550,49 @@ containerClearDbAndStorage.addEventListener('click', async () => {
 
 
 
+async function renderCartListItemsPanel(containerInputImages) {
+  console.log(`Element at index TEST`);
+  cart_items.forEach(function(item, index) {
+    console.log(`Create element at index ${index}: ${item.id} ${item.name}`);
+    const i_divRaw = document.createElement('div');
+    // i_divRaw.textContent = item.name;
+    
+    // i_divRaw.textContent = item.name;
+    i_divRaw.innerHTML =`
+    <div id="row_${index}" class="row-name">${item.name}</div>
+
+    <div class= "cart-row" style="display: flex; align-items: center;">
+      <button class="qty-btn minus" type="button" aria-label="Уменьшить">−</button>
+      <input id="table_${index}1" class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*" value="1" aria-label="Количество">
+      <button class="qty-btn plus" type="button" aria-label="Увеличить">+</button>
+    </div>
+
+    <div style="text-align: center;">
+      <span id="table_${index}2" class="qty-text"></span>
+    </div>`
+
+    containerCartListItemsPanel.appendChild(i_divRaw);
+    
+
+  });
+}
+
+// async function renderCartListItemsPanel(){
+  // cartListItemsPanel
+//   const numbers = [1, 2, 3, 4, 5];
+//   console.log(`Element at index`);
+  
+//   numbers.forEach(function(number, index) {
+//       console.log(`Element at index ${index}: ${number}`);
+//   });
+//   cart_items.forEach(function(number, index) {
+//     console.log(`Element at index ${index}: ${number}`);
+// });
+// // }
 
 
+
+// renderCartListItemsPanel();
 refreshFileSelector();
 
 // if image
@@ -554,6 +609,102 @@ if (imgSelector.length !== 0) {
 
   refreshImageOfMain();
 }
+
+
+function highlightDifferences() {
+  const status_box = document.getElementById(`checkStatus`);
+  let allMatch = true;
+      for (let i = 1; i <= 11; i++) {
+          const input = document.getElementById(`table_${i}1`);
+          const span = document.getElementById(`table_${i}2`);
+          const row = document.getElementById(`row_${i}`);
+
+          if (!input || !span || !row) continue; // на всякий случай
+
+          if (input.value != span.textContent) {
+              row.style.backgroundColor = "#ffcccc"; // красный фон
+              allMatch = false;
+          } else {
+              row.style.backgroundColor = "#ffffff"; // белый фон
+          }
+      }
+          if (allMatch) {
+              status_box.textContent = "Количество инструментов соответствует ожидаемому";
+              status_box.style.color = "green";
+          } else {
+              status_box.textContent = "Количество инструментов не совпадает с ожидаемым";
+              status_box.style.color = "red";
+          }
+}
+
+
+
+
+
+function renderRightCartList()
+{
+  // Находим все кнопки "+" в корзине
+  const plusButtons = document.querySelectorAll(".cart-list .qty-btn.plus");
+
+  // Находим все кнопки "-" в корзине
+  const minusButtons = document.querySelectorAll(".cart-list .qty-btn.minus");
+
+  plusButtons.forEach(btn => {
+    btn.addEventListener("click", function() {
+      // Находим родительский ряд
+      const row = btn.closest(".cart-row");
+      if (!row) return;
+
+      // Находим input с количеством в этом ряду
+      const input = row.querySelector(".qty-input");
+      // Точно так же можно находить текст const text = row.querySelector(".qty-text");
+      if (!input) return;
+
+      // Получаем текущее значение, увеличиваем на 1
+      let qty = parseInt(input.value) || 0;
+      qty += 1;
+      input.value = qty;
+      highlightDifferences();
+
+      // Триггерим событие change, если есть обработчики пересчета
+      input.dispatchEvent(new Event('change'));
+
+      console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+    });
+  });
+
+  minusButtons.forEach(btn => {
+    btn.addEventListener("click", function() {
+      // Находим родительский ряд
+      const row = btn.closest(".cart-row");
+      if (!row) return;
+
+      // Находим input с количеством в этом ряду
+      const input = row.querySelector(".qty-input");
+      // Точно так же можно находить текст const text = row.querySelector(".qty-text");
+      if (!input) return;
+
+
+      // Получаем текущее значение, увеличиваем на 1
+      let qty = parseInt(input.value) || 0;
+      qty -= 1;
+      if (qty < 0) qty = 0
+      input.value = qty;
+      highlightDifferences();
+
+      // Триггерим событие change, если есть обработчики пересчета
+      input.dispatchEvent(new Event('change'));
+
+      console.log(`Количество товара ${row.dataset.id} увеличено до ${qty}`);
+    });
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", renderRightCartList() );
+
+
+renderCartListItemsPanel();
 
 document.addEventListener('DOMContentLoaded', () => {
   // Your code to execute after the DOM is ready
