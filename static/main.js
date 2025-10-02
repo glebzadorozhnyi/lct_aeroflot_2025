@@ -25,20 +25,20 @@ function genHtmlRawOption(fileName) {
 }
 
 function showToast(message) {
-    const container = document.getElementById("toast-container");
+  const container = document.getElementById("toast-container");
 
-    // Создаём новый тост
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerText = message;
+  // Создаём новый тост
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerText = message;
 
-    container.appendChild(toast);
+  container.appendChild(toast);
 
-    // Удаляем через 4 секунды
-    setTimeout(() => {
-      toast.remove();
-    }, 4000);
-  }
+  // Удаляем через 4 секунды
+  setTimeout(() => {
+    toast.remove();
+  }, 4000);
+}
 
 async function refreshFileSelector() {
   containerLoading.classList.remove("hidden");
@@ -180,18 +180,22 @@ async function massUploadFiles(containerInputImages) {
       console.log("Успешная загрузка:", result.message);
       refreshFileSelector();
       refreshImageOfMain();
+      showToast("Файлы успешно загружены!\n" + result.message);
       containerScreen2.classList.remove("hidden");
       containerLoading.classList.add("hidden");
     } else {
       const result = await response.json();
       console.error("Ошибка загрузки:", response.statusText);
+      showToast(
+        "Ошибка при загрузке файлов.\n" + result.detail + result.message
+      );
       containerScreen1.classList.remove("hidden");
       containerScreen2.classList.add("hidden");
       containerLoading.classList.add("hidden");
     }
   } catch (error) {
     console.error("Ошибка при отправке запроса:", error);
-
+    showToast("Ошибка при отправке запроса.");
     containerScreen1.classList.remove("hidden");
     containerScreen2.classList.add("hidden");
     containerLoading.classList.add("hidden");
@@ -232,14 +236,17 @@ containerClearDbAndStorage.addEventListener("click", async () => {
     if (response.ok) {
       const result = await response.json();
       console.log("Файлы успешно удалены!", result.message);
+      showToast("Файлы успешно удалены!\n" + result.message);
       refreshFileSelector();
       refreshImageOfMain();
     } else {
       const result = await response.json();
       console.error("Ошибка удаления файлов.", response.statusText);
+      alert("Ошибка удаления файлов." + result.detail);
     }
   } catch (error) {
     console.error("Ошибка при отправке запроса:", error);
+    showToast("Ошибка при отправке запроса.");
   }
 
   containerLoading.classList.add("hidden");
