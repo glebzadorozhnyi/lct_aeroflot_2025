@@ -76,10 +76,13 @@
             <div
                 style="width: 90%; padding: 0 32px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
                 <!-- Левая часть -->
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <select id="currentImageFileSelector"></select>
-                    <img src="static/blue_arrow.png" style="width:16px; height:8px; margin-left: -28px;">
-                </div>
+            <div class="select-wrapper" style="display: flex; align-items: center; gap: 12px;">
+              <select id="currentImageFileSelector">
+                <option>Файл 1</option>
+                <option>Файл 2</option>
+              </select>
+              <img src="static/blue_arrow.png" alt="▼">
+            </div>
 
                 <!-- Правая часть -->
                 <span id="frameCounter" style="font-size: 16px; font-weight: 500;">0 / 0</span>

@@ -41,6 +41,11 @@ async function refreshFileSelector() {
       );
       containerScreen2.classList.remove("hidden");
       containerLoading.classList.add("hidden");
+      let length = countOfUploadedFiles.length;
+      selector = document.getElementById("currentImageFileSelector");
+      selector.selectedIndex = length - 1;
+      selector.dispatchEvent(new Event('change'));
+
     } else {
       containerScreen1.classList.remove("hidden");
       containerScreen2.classList.add("hidden");
