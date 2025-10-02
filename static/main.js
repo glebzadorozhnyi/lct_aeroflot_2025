@@ -159,8 +159,6 @@ async function massUploadFiles(containerInputImages) {
     if (response.ok) {
       const result = await response.json();
       console.log("Успешная загрузка:", result.message);
-      alert(`Файлы успешно загружены! 
-              ${result.message}`);
       refreshFileSelector();
       refreshImageOfMain();
       containerScreen2.classList.remove("hidden");
@@ -168,15 +166,12 @@ async function massUploadFiles(containerInputImages) {
     } else {
       const result = await response.json();
       console.error("Ошибка загрузки:", response.statusText);
-      alert(`Ошибка при загрузке файлов. 
-          ${result.detail}${result.msg}`);
       containerScreen1.classList.remove("hidden");
       containerScreen2.classList.add("hidden");
       containerLoading.classList.add("hidden");
     }
   } catch (error) {
     console.error("Ошибка при отправке запроса:", error);
-    alert("Ошибка при отправке запроса на сервер.");
 
     containerScreen1.classList.remove("hidden");
     containerScreen2.classList.add("hidden");
@@ -218,19 +213,14 @@ containerClearDbAndStorage.addEventListener("click", async () => {
     if (response.ok) {
       const result = await response.json();
       console.log("Файлы успешно удалены!", result.message);
-      alert(`Файлы успешно удалены! 
-              ${result.message}`);
       refreshFileSelector();
       refreshImageOfMain();
     } else {
       const result = await response.json();
       console.error("Ошибка удаления файлов.", response.statusText);
-      alert(`Ошибка удаления файлов.
-          ${result.detail}`);
     }
   } catch (error) {
     console.error("Ошибка при отправке запроса:", error);
-    alert("Ошибка при отправке запроса на сервер.");
   }
 
   containerLoading.classList.add("hidden");
